@@ -33,7 +33,7 @@ async function forward(req, urlObj, redirNum = 0) {
     mode: 'cors',
     method: req.method,
     headers: req.headers,
-    // credentials: req.credentials,
+    credentials: req.credentials,
     signal: req.signal,
     // referrerPolicy: 'no-referrer',
     referrer: req.referrer,
