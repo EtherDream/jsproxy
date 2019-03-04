@@ -1,0 +1,131 @@
+*.ext.jsproxy.tk   $_vhost_dec_ext;
+
+gg.jsproxy.tk      google.com;
+www.gg.jsproxy.tk  www.google.com;
+*.gg.jsproxy.tk    $_vhost_slice_0.google.com;
+
+gc.jsproxy.tk      google.cn;
+www.gc.jsproxy.tk  www.google.cn;
+*.gc.jsproxy.tk    $_vhost_slice_0.google.cn;
+
+gk.jsproxy.tk      google.com.hk;
+www.gk.jsproxy.tk  www.google.com.hk;
+*.gk.jsproxy.tk    $_vhost_slice_0.google.com.hk;
+
+gu.jsproxy.tk      googleusercontent.com;
+www.gu.jsproxy.tk  www.googleusercontent.com;
+*.gu.jsproxy.tk    $_vhost_slice_0.googleusercontent.com;
+
+gs.jsproxy.tk      googlesource.com;
+www.gs.jsproxy.tk  www.googlesource.com;
+*.gs.jsproxy.tk    $_vhost_slice_0.googlesource.com;
+
+wk.jsproxy.tk      wikipedia.org;
+www.wk.jsproxy.tk  www.wikipedia.org;
+*.wk.jsproxy.tk    $_vhost_slice_0.wikipedia.org;
+
+m.wk.jsproxy.tk      m.wikipedia.org;
+www.m.wk.jsproxy.tk  www.m.wikipedia.org;
+*.m.wk.jsproxy.tk    $_vhost_slice_1.m.wikipedia.org;
+
+so.jsproxy.tk      stackoverflow.com;
+www.so.jsproxy.tk  www.stackoverflow.com;
+*.so.jsproxy.tk    $_vhost_slice_0.stackoverflow.com;
+
+se.jsproxy.tk      stackexchange.com;
+www.se.jsproxy.tk  www.stackexchange.com;
+*.se.jsproxy.tk    $_vhost_slice_0.stackexchange.com;
+
+sf.jsproxy.tk      serverfault.com;
+www.sf.jsproxy.tk  www.serverfault.com;
+*.sf.jsproxy.tk    $_vhost_slice_0.serverfault.com;
+
+su.jsproxy.tk      superuser.com;
+www.su.jsproxy.tk  www.superuser.com;
+*.su.jsproxy.tk    $_vhost_slice_0.superuser.com;
+
+au.jsproxy.tk      askubuntu.com;
+www.au.jsproxy.tk  www.askubuntu.com;
+*.au.jsproxy.tk    $_vhost_slice_0.askubuntu.com;
+
+gh.jsproxy.tk      github.com;
+www.gh.jsproxy.tk  www.github.com;
+*.gh.jsproxy.tk    $_vhost_slice_0.github.com;
+
+qr.jsproxy.tk      quora.com;
+www.qr.jsproxy.tk  www.quora.com;
+*.qr.jsproxy.tk    $_vhost_slice_0.quora.com;
+
+ux.jsproxy.tk      unix.com;
+www.ux.jsproxy.tk  www.unix.com;
+*.ux.jsproxy.tk    $_vhost_slice_0.unix.com;
+
+mz.jsproxy.tk      mozilla.org;
+www.mz.jsproxy.tk  www.mozilla.org;
+*.mz.jsproxy.tk    $_vhost_slice_0.mozilla.org;
+
+w3.jsproxy.tk      w3schools.com;
+www.w3.jsproxy.tk  www.w3schools.com;
+*.w3.jsproxy.tk    $_vhost_slice_0.w3schools.com;
+
+cr.jsproxy.tk      chromium.org;
+www.cr.jsproxy.tk  www.chromium.org;
+*.cr.jsproxy.tk    $_vhost_slice_0.chromium.org;
+
+my.jsproxy.tk      myspace.com;
+www.my.jsproxy.tk  www.myspace.com;
+*.my.jsproxy.tk    $_vhost_slice_0.myspace.com;
+
+fb.jsproxy.tk      facebook.com;
+www.fb.jsproxy.tk  www.facebook.com;
+*.fb.jsproxy.tk    $_vhost_slice_0.facebook.com;
+
+yt.jsproxy.tk      youtube.com;
+www.yt.jsproxy.tk  www.youtube.com;
+*.yt.jsproxy.tk    $_vhost_slice_0.youtube.com;
+
+tw.jsproxy.tk      twitter.com;
+www.tw.jsproxy.tk  www.twitter.com;
+*.tw.jsproxy.tk    $_vhost_slice_0.twitter.com;
+
+fl.jsproxy.tk      flickr.com;
+www.fl.jsproxy.tk  www.flickr.com;
+*.fl.jsproxy.tk    $_vhost_slice_0.flickr.com;
+
+rd.jsproxy.tk      reddit.com;
+www.rd.jsproxy.tk  www.reddit.com;
+*.rd.jsproxy.tk    $_vhost_slice_0.reddit.com;
+
+bg.jsproxy.tk      blogger.com;
+www.bg.jsproxy.tk  www.blogger.com;
+*.bg.jsproxy.tk    $_vhost_slice_0.blogger.com;
+
+wp.jsproxy.tk      wordpress.com;
+www.wp.jsproxy.tk  www.wordpress.com;
+*.wp.jsproxy.tk    $_vhost_slice_0.wordpress.com;
+
+md.jsproxy.tk      medium.com;
+www.md.jsproxy.tk  www.medium.com;
+*.md.jsproxy.tk    $_vhost_slice_0.medium.com;
+
+hn.jsproxy.tk      hackernoon.com;
+www.hn.jsproxy.tk  www.hackernoon.com;
+*.hn.jsproxy.tk    $_vhost_slice_0.hackernoon.com;
+
+yh.jsproxy.tk      yahoo.com;
+www.yh.jsproxy.tk  www.yahoo.com;
+*.yh.jsproxy.tk    $_vhost_slice_0.yahoo.com;
+
+bc.jsproxy.tk      bbc.com;
+www.bc.jsproxy.tk  www.bbc.com;
+*.bc.jsproxy.tk    $_vhost_slice_0.bbc.com;
+
+th.jsproxy.tk      twitch.tv;
+www.th.jsproxy.tk  www.twitch.tv;
+*.th.jsproxy.tk    $_vhost_slice_0.twitch.tv;
+
+sc.jsproxy.tk      steamcommunity.com;
+www.sc.jsproxy.tk  www.steamcommunity.com;
+*.sc.jsproxy.tk    $_vhost_slice_0.steamcommunity.com;
+
+

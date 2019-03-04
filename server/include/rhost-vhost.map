@@ -1,0 +1,131 @@
+default         $_rhost_enc_ext.ext.jsproxy.tk;
+
+google.com       gg.jsproxy.tk;
+www.google.com   www.gg.jsproxy.tk;
+*.google.com     $_rhost_slice_1.gg.jsproxy.tk;
+
+google.cn       gc.jsproxy.tk;
+www.google.cn   www.gc.jsproxy.tk;
+*.google.cn     $_rhost_slice_1.gc.jsproxy.tk;
+
+google.com.hk       gk.jsproxy.tk;
+www.google.com.hk   www.gk.jsproxy.tk;
+*.google.com.hk     $_rhost_slice_2.gk.jsproxy.tk;
+
+googleusercontent.com       gu.jsproxy.tk;
+www.googleusercontent.com   www.gu.jsproxy.tk;
+*.googleusercontent.com     $_rhost_slice_1.gu.jsproxy.tk;
+
+googlesource.com       gs.jsproxy.tk;
+www.googlesource.com   www.gs.jsproxy.tk;
+*.googlesource.com     $_rhost_slice_1.gs.jsproxy.tk;
+
+wikipedia.org       wk.jsproxy.tk;
+www.wikipedia.org   www.wk.jsproxy.tk;
+*.wikipedia.org     $_rhost_slice_1.wk.jsproxy.tk;
+
+m.wikipedia.org       m.wk.jsproxy.tk;
+www.m.wikipedia.org   www.m.wk.jsproxy.tk;
+*.m.wikipedia.org     $_rhost_slice_2.m.wk.jsproxy.tk;
+
+stackoverflow.com       so.jsproxy.tk;
+www.stackoverflow.com   www.so.jsproxy.tk;
+*.stackoverflow.com     $_rhost_slice_1.so.jsproxy.tk;
+
+stackexchange.com       se.jsproxy.tk;
+www.stackexchange.com   www.se.jsproxy.tk;
+*.stackexchange.com     $_rhost_slice_1.se.jsproxy.tk;
+
+serverfault.com       sf.jsproxy.tk;
+www.serverfault.com   www.sf.jsproxy.tk;
+*.serverfault.com     $_rhost_slice_1.sf.jsproxy.tk;
+
+superuser.com       su.jsproxy.tk;
+www.superuser.com   www.su.jsproxy.tk;
+*.superuser.com     $_rhost_slice_1.su.jsproxy.tk;
+
+askubuntu.com       au.jsproxy.tk;
+www.askubuntu.com   www.au.jsproxy.tk;
+*.askubuntu.com     $_rhost_slice_1.au.jsproxy.tk;
+
+github.com       gh.jsproxy.tk;
+www.github.com   www.gh.jsproxy.tk;
+*.github.com     $_rhost_slice_1.gh.jsproxy.tk;
+
+quora.com       qr.jsproxy.tk;
+www.quora.com   www.qr.jsproxy.tk;
+*.quora.com     $_rhost_slice_1.qr.jsproxy.tk;
+
+unix.com       ux.jsproxy.tk;
+www.unix.com   www.ux.jsproxy.tk;
+*.unix.com     $_rhost_slice_1.ux.jsproxy.tk;
+
+mozilla.org       mz.jsproxy.tk;
+www.mozilla.org   www.mz.jsproxy.tk;
+*.mozilla.org     $_rhost_slice_1.mz.jsproxy.tk;
+
+w3schools.com       w3.jsproxy.tk;
+www.w3schools.com   www.w3.jsproxy.tk;
+*.w3schools.com     $_rhost_slice_1.w3.jsproxy.tk;
+
+chromium.org       cr.jsproxy.tk;
+www.chromium.org   www.cr.jsproxy.tk;
+*.chromium.org     $_rhost_slice_1.cr.jsproxy.tk;
+
+myspace.com       my.jsproxy.tk;
+www.myspace.com   www.my.jsproxy.tk;
+*.myspace.com     $_rhost_slice_1.my.jsproxy.tk;
+
+facebook.com       fb.jsproxy.tk;
+www.facebook.com   www.fb.jsproxy.tk;
+*.facebook.com     $_rhost_slice_1.fb.jsproxy.tk;
+
+youtube.com       yt.jsproxy.tk;
+www.youtube.com   www.yt.jsproxy.tk;
+*.youtube.com     $_rhost_slice_1.yt.jsproxy.tk;
+
+twitter.com       tw.jsproxy.tk;
+www.twitter.com   www.tw.jsproxy.tk;
+*.twitter.com     $_rhost_slice_1.tw.jsproxy.tk;
+
+flickr.com       fl.jsproxy.tk;
+www.flickr.com   www.fl.jsproxy.tk;
+*.flickr.com     $_rhost_slice_1.fl.jsproxy.tk;
+
+reddit.com       rd.jsproxy.tk;
+www.reddit.com   www.rd.jsproxy.tk;
+*.reddit.com     $_rhost_slice_1.rd.jsproxy.tk;
+
+blogger.com       bg.jsproxy.tk;
+www.blogger.com   www.bg.jsproxy.tk;
+*.blogger.com     $_rhost_slice_1.bg.jsproxy.tk;
+
+wordpress.com       wp.jsproxy.tk;
+www.wordpress.com   www.wp.jsproxy.tk;
+*.wordpress.com     $_rhost_slice_1.wp.jsproxy.tk;
+
+medium.com       md.jsproxy.tk;
+www.medium.com   www.md.jsproxy.tk;
+*.medium.com     $_rhost_slice_1.md.jsproxy.tk;
+
+hackernoon.com       hn.jsproxy.tk;
+www.hackernoon.com   www.hn.jsproxy.tk;
+*.hackernoon.com     $_rhost_slice_1.hn.jsproxy.tk;
+
+yahoo.com       yh.jsproxy.tk;
+www.yahoo.com   www.yh.jsproxy.tk;
+*.yahoo.com     $_rhost_slice_1.yh.jsproxy.tk;
+
+bbc.com       bc.jsproxy.tk;
+www.bbc.com   www.bc.jsproxy.tk;
+*.bbc.com     $_rhost_slice_1.bc.jsproxy.tk;
+
+twitch.tv       th.jsproxy.tk;
+www.twitch.tv   www.th.jsproxy.tk;
+*.twitch.tv     $_rhost_slice_1.th.jsproxy.tk;
+
+steamcommunity.com       sc.jsproxy.tk;
+www.steamcommunity.com   www.sc.jsproxy.tk;
+*.steamcommunity.com     $_rhost_slice_1.sc.jsproxy.tk;
+
+
