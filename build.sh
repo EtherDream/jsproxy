@@ -56,6 +56,18 @@ echo "\
 server_name *.$DOMAIN;
 listen $svc_port ssl;" > ./server/include/host-wild.conf
 
+echo "\
+ssl_certificate         cert/${DOMAIN}.fullchain.rsa.cer;
+ssl_certificate_key     cert/${DOMAIN}.rsa.key;
+
+ssl_certificate         cert/${DOMAIN}.fullchain.ecc.cer;
+ssl_certificate_key     cert/${DOMAIN}.ecc.key;
+" > ./server/include/cert.conf
+
+echo "\
+return                  200   'importScripts(\"//${DOMAIN}/x.js\")';
+" > ./server/include/x-js.conf
+      
 
 # gen ssl cert
 ACME=~/.acme.sh/acme.sh
