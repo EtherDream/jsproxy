@@ -111,44 +111,16 @@ export function init(win, hook) {
     }
   }
 
-  function processForm(el) {
-    processElem(el, 'action')
-  }
-
-  function processLink(el) {
-    processElem(el, 'href')
-  }
-
-  win.addEventListener('click', e => {
-    let el = e.target
-    while (el) {
-      let tag = el.tagName
-      if (tag === 'A' || tag === 'AREA') {
-        processLink(el)
-        break
-      }
-      el = el.parentNode
-    }
-  }, true)
-
-  win.addEventListener('submit', e => {
-    let el = e.target
-    if (el.tagName === 'FORM') {
-      processForm(el)
-    }
-  }, true)
-
-
   function linkClickHook(oldFn) {
     return function() {
-      processLink(this)
+      processElem(el, 'href')
       return apply(oldFn, this, arguments)
     }
   }
   hook.func(linkProto, 'click', linkClickHook)
   hook.func(areaProto, 'click', linkClickHook)
   hook.func(formProto, 'submit', oldFn => function() {
-    processForm(this)
+    processElem(el, 'action')
     return apply(oldFn, this, arguments)
   })
 
