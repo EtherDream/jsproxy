@@ -113,14 +113,14 @@ export function init(win, hook) {
 
   function linkClickHook(oldFn) {
     return function() {
-      processElem(el, 'href')
+      processElem(this, 'href')
       return apply(oldFn, this, arguments)
     }
   }
   hook.func(linkProto, 'click', linkClickHook)
   hook.func(areaProto, 'click', linkClickHook)
   hook.func(formProto, 'submit', oldFn => function() {
-    processElem(el, 'action')
+    processElem(this, 'action')
     return apply(oldFn, this, arguments)
   })
 
