@@ -24,9 +24,8 @@ function setup(obj, fakeLoc) {
 
 /**
  * @param {Window} win 
- * @param {Hook} hook 
  */
-export function init(win, hook) {
+export function init(win) {
   let loc = win.location
 
   // TODO: iframe 场合下存在问题
@@ -122,8 +121,8 @@ export function init(win, hook) {
       loc.hash = val
     },
 
-    reload(...args) {
-      loc.reload(...args)
+    reload() {
+      loc.reload(...arguments)
     },
 
     replace(val) {
