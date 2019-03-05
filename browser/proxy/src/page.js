@@ -1,4 +1,4 @@
-import {createHook, DELETE} from './hook.js'
+import {createHook} from './hook.js'
 import * as urlx from './urlx.js'
 import * as util from './util.js'
 import * as nav from './nav.js'
@@ -321,21 +321,9 @@ function initWin(win) {
     },
     onset(val) {
       this._integrity = val
-      return DELETE
+      return ''
     }
   },
-  // // 
-  // {
-  //   name: 'type',
-  //   onget(val) {
-  //     return val
-  //   },
-  //   onset(val) {
-  //     updateScript(this)
-  //     return val
-  //   }
-  // },
-  // 
   {
     name: 'innerText',
     onget(val) {
@@ -363,7 +351,6 @@ function initWin(win) {
       setter.call(this, val)
     }
   }
-  hook.prop(scriptProto, 'innerHTML', scriptGetJs, scriptSetJs)
   hook.prop(scriptProto, 'text', scriptGetJs, scriptSetJs)
 
   const JS_MIME = {

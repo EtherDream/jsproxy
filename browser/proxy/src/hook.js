@@ -1,24 +1,18 @@
-export const DELETE = {}
 export const RETURN = {}
+
+const {
+  apply,
+  getOwnPropertyDescriptor,
+  defineProperty,
+} = Reflect
+
+const rawMap = new WeakMap()
+
 
 /**
  * @param {Window} win 
  */
 export function createHook(win) {
-  // const {
-  //   Reflect,
-  //   WeakMap,
-  // } = win
-
-  const {
-    apply,
-    getOwnPropertyDescriptor,
-    defineProperty,
-  } = Reflect
-
-  const rawMap = new WeakMap()
-
-
   /**
    * hook function
    * 
@@ -72,9 +66,9 @@ export function createHook(win) {
         return onget.call(this, val)
       },
       setter => function(val) {
-        const ret = onset.call(this, val)
-        if (ret !== null) {
-          val = ret
+        val = onset.call(this, val)
+        if (val == RETURN) {
+          return
         }
         setter.call(this, val)
       }
@@ -97,14 +91,15 @@ export function createHook(win) {
     let keySetMap, keyGetMap
 
     handlers.forEach(v => {
-      // 划线转驼峰（'http-equiv' -> 'httpEquiv'）
-      const name = v.name.replace(/-(\w)/g, (_, $1) => {
-        return $1.toUpperCase()
-      })
-      hookElemProp(proto, name, v.onget, v.onset)
+      // 带划线的 attr 属性名，转换成驼峰形式的 prop 属性名。
+      // 例如 `http-equiv` -> `httpEquiv`
+      const prop = v.name.replace(/-(\w)/g,
+        (_, char) => char.toUpperCase()
+      )
+      hookElemProp(proto, prop, v.onget, v.onset)
 
       // #text
-      if (name === 'innerText') {
+      if (prop === 'innerText') {
         tagTextHandlerMap[tag] = v
         return
       }
@@ -123,7 +118,7 @@ export function createHook(win) {
         keySetMap = tagKeySetMap[tag]
         keyGetMap = tagKeyGetMap[tag]
       }
-      const key = toLCase.call(name)
+      const key = toLCase.call(v.name)
       keySetMap[key] = v.onset
       keyGetMap[key] = v.onget
       hasAttr = true
@@ -133,33 +128,30 @@ export function createHook(win) {
       return
     }
 
-    // 如果之前调用过 setAttribute，那么直接返回上次设置的值。
-    // 如果没有调用过则回调 onget
+    // 如果之前调用过 setAttribute，直接返回上次设置的值；
+    // 如果没有调用过，则返回 onget 的回调值。
     func(proto, 'getAttribute', oldFn => function(name) {
       const key = toLCase.call(name)
-      const get = keyGetMap[key]
-      if (get) {
-        const lastVal = this['_k' + key]
-        if (lastVal !== undefined) {
-          return lastVal
-        }
-        const val = apply(oldFn, this, arguments)
-        return get(val)
+      const onget = keyGetMap[key]
+      if (!onget) {
+        return apply(oldFn, this, arguments)
       }
-      return apply(oldFn, this, arguments)
+
+      const lastVal = this['_k' + key]
+      if (lastVal !== undefined) {
+        return lastVal
+      }
+      const val = apply(oldFn, this, arguments)
+      return onget(val)
     })
 
     func(proto, 'setAttribute', oldFn => function(name, val) {
       const key = toLCase.call(name)
-      const set = keySetMap[key]
-      if (set) {
+      const onset = keySetMap[key]
+      if (onset) {
         this['_k' + key] = val
 
-        const ret = set.call(this, val)
-        if (ret === DELETE) {
-          this.removeAttribute(key)
-          return
-        }
+        const ret = onset.call(this, val)
         if (ret === RETURN) {
           return
         }
@@ -180,10 +172,6 @@ export function createHook(win) {
   function parseNewTextNode(node, handler, elem) {
     const val = node.nodeValue
     const ret = handler.onset.call(elem, val)
-    if (ret === DELETE) {
-      node.remove()
-      return
-    }
     if (ret === RETURN) {
       return
     }
@@ -201,10 +189,6 @@ export function createHook(win) {
     }
     const val = rawGetAttr.call(elem, name)
     const ret = handler.onset.call(elem, val)
-    if (ret === DELETE) {
-      elem.removeAttribute(name)
-      return
-    }
     if (ret === RETURN) {
       return
     }
@@ -251,7 +235,7 @@ export function createHook(win) {
   // })
 
   // hide source code
-  func(Function.prototype, 'toString', oldFn => function() {
+  func(win.Function.prototype, 'toString', oldFn => function() {
     return apply(oldFn, rawMap.get(this) || this, arguments)
   })
   
