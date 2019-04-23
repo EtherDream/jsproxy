@@ -37,7 +37,7 @@ yum install -y \
 启动服务：
 
 ```bash
-./server/run.sh
+~/server/run.sh
 ```
 
 访问：https://etherdream.github.io/jsproxy-localtest/-----https://github.com/
