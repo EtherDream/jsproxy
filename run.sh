@@ -1,7 +1,7 @@
 NGX_BIN=/home/jsproxy/openresty/nginx/sbin/nginx
 
 # local test
-if [ ! -f NGX_BIN ]; then
+if [ ! -f $NGX_BIN ]; then
     NGX_BIN=/usr/local/openresty/nginx/sbin/nginx
 fi
 
