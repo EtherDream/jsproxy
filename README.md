@@ -16,7 +16,7 @@ useradd jsproxy -g nobody
 su jsproxy
 
 cd ~
-git clone --depth=1 git@github.com:EtherDream/jsproxy.git server
+git clone --depth=1 https://github.com/EtherDream/jsproxy.git server
 
 cd server
 ./setup-nginx.sh
