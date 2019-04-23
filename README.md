@@ -49,7 +49,9 @@ yum install -y \
 
 # 部署
 
-参考 `gen-cert` 目录，为自己的域名申请证书，然后修改 `nginx.conf` 中域名相关的配置（默认被注释），以及 DNS 地址（默认是 114.114.114.114）。
+参考 `gen-cert` 目录，为自己的域名申请证书。（不申请证书也可以，例如通过 CloudFlare）
+
+修改 `nginx.conf` 中域名相关的配置（默认被注释），以及 DNS 地址（默认是 114.114.114.114）。
 
 浏览器端项目位于：https://github.com/EtherDream/jsproxy-browser
 
