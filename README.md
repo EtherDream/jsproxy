@@ -104,6 +104,13 @@ https://zjcqoo.github.io/-----https://www.google.com
 代码改进：接口代理使用固定的 URL（参见 `api.conf`），不再使用任意路径，代码干净了很多。
 
 
+## 支持更多浏览器
+
+相比之前版本只支持 Chrome，现在还支持最新的 Safari 和 FireFox。
+
+注意：FireFox 隐身模式下不支持 Service Worker，只能普通模式访问。
+
+
 ### 提供一个首页
 
 虽然依旧简陋，但比之前好。提供了线路切换、预加载的功能。
