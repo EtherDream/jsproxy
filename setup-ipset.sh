@@ -8,7 +8,7 @@ iptables \
   -m set --match-set ngx-ban-dstip dst \
   -j REJECT
 
-# https://en.wk.jsproxy.tk/wiki/Reserved_IP_addresses
+# https://en.wikipedia.org/wiki/Reserved_IP_addresses
 REV_NET=(
   0.0.0.0/8
   10.0.0.0/8
