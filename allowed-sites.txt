@@ -1,0 +1,4 @@
+# no pathname
+http://localhost                  1;
+https://etherdream.github.io      1;
+https://zjcqoo.github.io          1;
