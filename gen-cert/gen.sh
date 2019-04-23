@@ -2,6 +2,8 @@ ACME=~/.acme.sh/acme.sh
 
 source ./dnsconf
 
+mkdir -p ../cert/$DOMAIN
+
 $ACME \
   --issue \
   --dns $DNS_ID \
@@ -15,17 +17,17 @@ $ACME \
 
 $ACME \
 	--install-cert -d *.$DOMAIN \
-	--key-file ../../server/cert/$DOMAIN/rsa.key \
-	--fullchain-file ../../server/cert/$DOMAIN/rsa.cer
+	--key-file ../cert/$DOMAIN/rsa.key \
+	--fullchain-file ../cert/$DOMAIN/rsa.cer
 
 $ACME \
 	--install-cert -d *.$DOMAIN --ecc \
-	--key-file ../../server/cert/$DOMAIN/ecc.key \
-	--fullchain-file ../../server/cert/$DOMAIN/ecc.cer
+	--key-file ../cert/$DOMAIN/ecc.key \
+	--fullchain-file ../cert/$DOMAIN/ecc.cer
 
 echo "
 ssl_certificate       cert/$DOMAIN/rsa.cer;
 ssl_certificate_key   cert/$DOMAIN/rsa.key;
 ssl_certificate       cert/$DOMAIN/ecc.cer;
 ssl_certificate_key   cert/$DOMAIN/ecc.key;
-" > ../../server/cert/$DOMAIN/ngx.conf
+" > ../cert/$DOMAIN/ngx.conf
