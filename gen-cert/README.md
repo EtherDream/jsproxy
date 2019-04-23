@@ -32,10 +32,10 @@ export CF_Email="user@gmail.com"
 
 > API Keys 可在 https://dash.cloudflare.com/ 查看。
 
-执行 `./gen.sh` 开始申请，证书文件保存到 `server/cert/域名` 目录下。
+执行 `./gen.sh` 开始申请，证书文件保存到 `~/server/cert/域名` 目录下。
 
 重启服务生效：
 
 ```bash
-./server/run.sh reload
+~/server/run.sh reload
 ```
