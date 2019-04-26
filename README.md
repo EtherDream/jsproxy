@@ -53,20 +53,18 @@ yum install -y \
 
 浏览器端项目位于：https://github.com/EtherDream/jsproxy-browser
 
-准备一个域名（例如 `example.com`），解析 IP 到自己的服务器。
-
-参考备注，将 `example.com` 添加到线路服务器地址。
+准备一个域名（例如 `example.com`），参考备注，将其添加到线路地址。
 
 > 注意：端口是 8443，不是 8080。因为 Service Worker 只有本地测试可用 HTTP 协议，其他场合必须 HTTPS。
 
-执行 `./debug.sh` 编译脚本，将 `www` 目录发布到 Web 空间（例如 `https://myhost.github.io`）
+编译脚本，将 `www` 目录发布到 Web 空间（例如 `https://myhost.github.io`）
 
 （目前还不完善，之后将实现动态配置，无需修改 JS 代码）
 
 
 ## 服务端
 
-给域名 `example.com` 申请证书，保存到 `cert/example.com/` 目录下。（可参考 `gen-cert` 目录，使用脚本自动生成，得到 `ecc.key` 和 `ecc.cer` 文件）
+解析 `example.com` 到自己的服务器。给该域名申请证书，保存到 `cert/example.com/` 目录下。（可参考 `gen-cert` 目录，使用脚本自动生成）
 
 修改 `nginx.conf` 中域名相关的配置（默认被注释）。
 
