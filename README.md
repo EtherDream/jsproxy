@@ -49,17 +49,28 @@ yum install -y \
 
 # 部署
 
-参考 `gen-cert` 目录，为自己的域名申请证书。（不申请证书也可以，例如通过 CloudFlare）
-
-修改 `nginx.conf` 中域名相关的配置（默认被注释），以及 DNS 地址（默认是 114.114.114.114）。
+## 客户端
 
 浏览器端项目位于：https://github.com/EtherDream/jsproxy-browser
 
-参考备注，修改线路服务器地址，之后将 www 目录发布到 Web 空间即可。
+准备一个域名（例如 `example.com`），解析 IP 到自己的服务器。
 
-在 `allowed-sites.txt` 中添加 Web 空间的地址，重启服务生效。该文件授权哪些网站可以调用该接口，防止被滥用。
+参考备注，将 `example.com` 添加到线路服务器地址。
+
+> 注意：端口是 8443，不是 8080。因为 Service Worker 只有本地测试可用 HTTP 协议，其他场合必须 HTTPS。
+
+执行 `./debug.sh` 编译脚本，将 `www` 目录发布到 Web 空间（例如 `https://myhost.github.io`）
 
 （目前还不完善，之后将实现动态配置，无需修改 JS 代码）
+
+
+## 服务端
+
+给域名 `example.com` 申请证书，保存到 `cert/example.com/` 目录下。（可参考 `gen-cert` 目录，使用脚本自动生成，得到 `ecc.key` 和 `ecc.cer` 文件）
+
+修改 `nginx.conf` 中域名相关的配置（默认被注释）。
+
+在 `allowed-sites.txt` 中添加 Web 空间的地址（例如 `https://myhost.github.io`），重启服务生效。
 
 
 # 安全策略
