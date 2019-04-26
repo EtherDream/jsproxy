@@ -4,10 +4,10 @@ tar zxvf openresty-*
 cd openresty-*
 
 ./configure \
-	--with-http_v2_module \
-	--with-http_ssl_module \
-	--with-pcre-jit \
-	--prefix=/home/jsproxy/openresty
+  --with-http_v2_module \
+  --with-http_ssl_module \
+  --with-pcre-jit \
+  --prefix=/home/jsproxy/openresty
 
 make
 make install
