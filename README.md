@@ -68,7 +68,13 @@ yum install -y \
 
 修改 `nginx.conf` 中域名相关的配置（默认被注释）。
 
-在 `allowed-sites.txt` 中添加 Web 空间的地址（例如 `https://myhost.github.io`），重启服务生效。
+在 `allowed-sites.txt` 中添加一行 Web 空间的地址，例如：
+
+```
+https://myhost.github.io  				'my';
+```
+
+重启服务。访问 `https://myhost.github.io` 预览。
 
 
 # 安全策略
