@@ -4,11 +4,8 @@ source ./dnsconf
 
 mkdir -p ../cert/$DOMAIN
 
-$ACME \
-  --issue \
-  --dns $DNS_ID \
-  -d *.$DOMAIN
-
+# 使用 Service Worker 的基本是高版本浏览器和操作系统，
+# 因此去除了 RSA，只用 ECC 算法。
 $ACME \
   --issue \
   --dns $DNS_ID \
@@ -16,18 +13,6 @@ $ACME \
   --keylength ec-256
 
 $ACME \
-	--install-cert -d *.$DOMAIN \
-	--key-file ../cert/$DOMAIN/rsa.key \
-	--fullchain-file ../cert/$DOMAIN/rsa.cer
-
-$ACME \
 	--install-cert -d *.$DOMAIN --ecc \
 	--key-file ../cert/$DOMAIN/ecc.key \
 	--fullchain-file ../cert/$DOMAIN/ecc.cer
-
-echo "
-ssl_certificate       cert/$DOMAIN/rsa.cer;
-ssl_certificate_key   cert/$DOMAIN/rsa.key;
-ssl_certificate       cert/$DOMAIN/ecc.cer;
-ssl_certificate_key   cert/$DOMAIN/ecc.key;
-" > ../cert/$DOMAIN/ngx.conf
