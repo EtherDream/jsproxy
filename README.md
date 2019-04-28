@@ -137,9 +137,12 @@ https://zjcqoo.github.io/-----https://www.google.com
 懒人模式提供自动生成CF certificate 并且使用docker进行一键启动服务器
 
 ```bash
+# 执行命令生成需要的配置文件
 bash genConf.sh
+# 生成docker镜像
 docker build -t jsproxy .
-docker run -p 8080:8080 -p 8443:8443 jsproxy
+运行镜像
+docker run -d -p 8080:8080 -p 8443:8443 jsproxy
 ```
 
 # License
