@@ -18,6 +18,7 @@ export CF_Email="$mail"
 EOF
 cd ./gen-cert
 bash gen.sh
+cd ..
 # 替换域名
 sed -i "s/example.com/$domain/g" nginx.conf
 # 添加服务器到白名单
