@@ -22,5 +22,4 @@ bash gen.sh
 sed -i "s/example.com/$domain/g" nginx.conf
 # 添加服务器到白名单
 echo "https://$domain    '$domaine';" >> allowed-sites.conf
-
 echo "生成完毕 请使用Docker进行后续工作"
