@@ -19,4 +19,4 @@ RUN bash /home/jsproxy/server/setup-nginx.sh
 RUN bash /home/jsproxy/server/run.sh
 EXPOSE 8080 8443
 
-CMD ["tail -f", "/home/jsproxy/server/nginx/logs/proxy.log"]
+CMD tail -f /home/jsproxy/server/nginx/logs/proxy.log
