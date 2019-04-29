@@ -32,6 +32,9 @@ yum install -y \
 	zlib zlib-devel
 ```
 
+> nginx 最终安装在 `/home/jsproxy/openresty` 下，不会和系统已有的冲突。
+
+
 ## 测试
 
 启动服务：
