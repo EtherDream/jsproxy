@@ -23,6 +23,8 @@ for k, v in pairs(h) do
     k == 'set-cookie'
   then
     if type(v) == 'table' then
+      -- 如果存在重名字段（例如 Set-Cookie）
+      -- 则转义成：0-Set-Cookie, 1-Set-Cookie, ...
       for i = 1, #v do
         local x = i .. '-' .. k
         ngx.header[x] = v[i]
@@ -32,6 +34,7 @@ for k, v in pairs(h) do
         end
       end
     else
+      -- 默认转义成：--Set-Cookie
       local x = '--' .. k
       ngx.header[x] = v
 
@@ -39,6 +42,7 @@ for k, v in pairs(h) do
         expose = expose .. ',' .. x
       end
     end
+    -- 删除原始字段
     ngx.header[k] = nil
 
   elseif k == 'vary' then
@@ -64,6 +68,7 @@ end
 
 if detail then
   expose = expose .. ',--s'
+  -- 该字段不在 aceh 中，如果浏览器能读取到，说明支持 aceh: *
   ngx.header['--t'] = '1'
 end
 
