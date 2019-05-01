@@ -8,6 +8,9 @@ read mail;
 echo "请输入CF 密钥";
 read token;
 
+echo "请输加入入允许访问域名";
+read allowedDomain;
+
 curl https://get.acme.sh | sh
 
 cat > ./gen-cert/dnsconf <<EOF
@@ -22,5 +25,5 @@ cd ..
 # 替换域名
 sed -i "s/example.com/$domain/g" nginx.conf
 # 添加服务器到白名单
-echo "https://$domain    '$domain';" >> allowed-sites.conf
+echo "https://$allowedDomain    '$allowedDomain';" >> allowed-sites.conf
 echo "生成完毕 请使用Docker进行后续工作"

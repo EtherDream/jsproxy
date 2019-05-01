@@ -15,8 +15,8 @@ ADD . /home/jsproxy/server
 
 # 安装服务器
 RUN bash /home/jsproxy/server/setup-nginx.sh
-# 启动服务
-RUN bash /home/jsproxy/server/run.sh
+
 EXPOSE 8080 8443
 
-CMD tail -f /home/jsproxy/server/nginx/logs/proxy.log
+# 启动服务
+CMD ["/home/jsproxy/openresty/nginx/sbin/nginx","-c","/home/jsproxy/server/nginx.conf","-p","/home/jsproxy/server/nginx","-g","daemon off;"]
