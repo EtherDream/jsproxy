@@ -21,6 +21,9 @@ for k, v in pairs(hdrs) do
   elseif k == 'ext' then
     extHdrs = require('cjson').decode(v)
   else
+    if k == 'referer' then
+      ngx.var._ref = v
+    end
     ngx.req.set_header(k, v)
   end
 

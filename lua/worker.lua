@@ -5,7 +5,7 @@ if ngx.worker.id() ~= 0 then
   return
 end
 
-local function getDevTraffic(dev)
+local function buildDevTrafficFn(dev)
   --       0     1       2    3    4    5     6          7
   -- eth0: bytes packets errs drop fifo frame compressed multicast
   --       bytes packets errs drop fifo colls carrier    compressed
@@ -45,7 +45,7 @@ if fileStat == nil then
 end
 
 local firstRun = true
-local getDevTraffic = getDevTraffic('eth0')
+local getDevTraffic = buildDevTrafficFn('eth0')
 
 
 local function updateTraffic()
