@@ -116,7 +116,7 @@ https://myhost.github.io     'my';
 
 ![](https://raw.githubusercontent.com/EtherDream/jsproxy-localtest/temp/hook.png)
 
-对于有些无法重写的 API，例如 `location`，本代理会将代码中的字面出现的 `location` 替换成 `__location`，从而将操作转移到自定义对象上。当然对于非字面的情况（例如 `this['lo' + 'cation']`），目前还无法处理。
+对于有些无法重写的 API，例如 `location`，本代理会将代码中字面出现的 `location` 替换成 `__location`，从而将操作转移到自定义对象上。当然对于非字面的情况（例如 `this['lo' + 'cation']`），目前还无法处理。
 
 
 ### 界面和接口分离

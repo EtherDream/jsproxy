@@ -11,7 +11,7 @@ for v in ${NODE[@]}; do
   echo "$v upload ..."
 
   rsync . jsproxy@$v.$HOST:server \
-    -r -p \
+    -a \
     --exclude='nginx/cache/*' \
     --exclude='nginx/logs/*'
 
