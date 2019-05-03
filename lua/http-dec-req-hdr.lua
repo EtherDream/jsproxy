@@ -16,6 +16,10 @@ for k, v in pairs(hdrs) do
     ngx.var._url = v
   elseif k == 'ver' then
     ngx.var._ver = v
+  elseif k == 'type' then
+    ngx.var._type = v
+  elseif k == 'mode' then
+    ngx.var._mode = v
   elseif k == 'aceh' then
     ngx.ctx._aceh = 1
   elseif k == 'ext' then
