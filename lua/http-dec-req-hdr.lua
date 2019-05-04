@@ -21,12 +21,14 @@ for k, v in pairs(hdrs) do
   elseif k == 'mode' then
     ngx.var._mode = v
   elseif k == 'aceh' then
-    ngx.ctx._aceh = 1
+    ngx.ctx._acehOld = true
   elseif k == 'ext' then
     extHdrs = require('cjson').decode(v)
   else
     if k == 'referer' then
       ngx.var._ref = v
+    else if k == 'cookie' then
+      ngx.ctx._hasCookie = true
     end
     ngx.req.set_header(k, v)
   end

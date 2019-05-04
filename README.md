@@ -9,10 +9,11 @@ https://zjcqoo.github.io/-----https://www.google.com
 
 # 安装
 
-新建一个名为 `jsproxy` 用户，在其主目录安装 nginx：
+新建一个名为 `jsproxy:nobody` 用户，在其主目录安装 nginx：
 
 ```bash
-useradd jsproxy -g nobody
+groupadd nobody
+useradd jsproxy -g nobody --create-home
 su jsproxy
 
 cd ~

@@ -4,11 +4,20 @@
 -- aceh = HTTP 返回头的 access-control-expose-headers 字段
 
 
+--  
+if
+  ngx.req.get_method() == 'GET' and
+  not ngx.ctx._hasCookie
+then
+
+end
+
+
 -- 无论浏览器是否支持，aceh 始终包含 *
 local expose = '*'
 
 -- 该值为 true 表示浏览器不支持 aceh: *，需返回详细的头部列表
-local detail = (ngx.ctx._aceh == 1)
+local detail = ngx.ctx._acehOld
 
 -- 由于接口路径固定，为避免被缓存，以请求头的 --url 值区分缓存
 local vary = '--url'
