@@ -1,11 +1,24 @@
 /**
  * jsproxy cfworker api
  * 
- * @update: 2019-05-03
+ * @update: 2019-05-07
  * @author: EtherDream
  * @see: https://github.com/EtherDream/jsproxy/
  */
+'use strict'
+
+const PREFLIGHT_INIT = {
+  status: 204,
+  headers: new Headers({
+    'access-control-allow-origin': '*',
+    'access-control-allow-methods': 'GET,POST,PUT,PATCH,TRACE,DELETE,HEAD,OPTIONS',
+    'access-control-allow-headers': '--raw-info,--level,--url,--referer,--cookie,--origin,--ext,--aceh,--ver,--type,--mode,accept,accept-charset,accept-encoding,accept-language,accept-datetime,authorization,cache-control,content-length,content-type,date,if-match,if-modified-since,if-none-match,if-range,if-unmodified-since,max-forwards,pragma,range,te,upgrade,upgrade-insecure-requests,x-requested-with,chrome-proxy',
+    'access-control-max-age': '1728000',
+  }),
+}
+
 const pairs = Object.entries
+
 
 addEventListener('fetch', e => {
   const ret = handler(e.request)
@@ -15,37 +28,38 @@ addEventListener('fetch', e => {
 })
 
 
-const PREFLIGHT_INIT = {
-  status: 204,
-  headers: new Headers({
-    'access-control-allow-origin': '*',
-    'access-control-allow-methods': 'GET,POST,PUT,PATCH,TRACE,DELETE,HEAD,OPTIONS',
-    'access-control-allow-headers': '--url,--referer,--cookie,--origin,--ext,--aceh,--ver,--type,--mode,accept,accept-charset,accept-encoding,accept-language,accept-datetime,authorization,cache-control,content-length,content-type,date,if-match,if-modified-since,if-none-match,if-range,if-unmodified-since,max-forwards,pragma,range,te,upgrade,upgrade-insecure-requests,x-requested-with,chrome-proxy',
-    'access-control-max-age': '1728000',
-  }),
-}
-
 /**
  * @param {Request} req
  */
 async function handler(req) {
   const reqHdrRaw = req.headers
+  if (reqHdrRaw.has('x-jsproxy')) {
+    return Response.error()
+  }
 
   // preflight
-  if (reqHdrRaw.has('access-control-request-headers')) {
+  if (req.method === 'OPTIONS' &&
+      reqHdrRaw.has('access-control-request-headers')
+  ) {
     return new Response(null, PREFLIGHT_INIT)
   }
 
   let url = ''
   let extHdrs = null
   let acehOld = false
+  let rawSvr = ''
+  let rawLen = ''
+  let rawEtag = ''
 
   const reqHdrNew = new Headers(reqHdrRaw)
+  reqHdrNew.set('x-jsproxy', '1')
 
   for (const [k, v] of reqHdrRaw.entries()) {
     if (!k.startsWith('--')) {
       continue
     }
+    reqHdrNew.delete(k)
+
     const k2 = k.substr(2)
     switch (k2) {
     case 'url':
@@ -54,6 +68,11 @@ async function handler(req) {
     case 'aceh':
       acehOld = true
       break
+    case 'raw-info':
+      // TODO: ,,
+      [rawSvr, rawLen, rawEtag] = v.split(/,{1,2}/)
+      break
+    case 'level':
     case 'mode':
     case 'type':
       break
@@ -61,7 +80,11 @@ async function handler(req) {
       extHdrs = JSON.parse(v)
       break
     default:
-      reqHdrNew.set(k2, v)
+      if (v) {
+        reqHdrNew.set(k2, v)
+      } else {
+        reqHdrNew.delete(k2)
+      }
       break
     }
   }
@@ -84,7 +107,7 @@ async function handler(req) {
 
   let expose = '*'
   let vary = '--url'
-
+  
   for (const [k, v] of resHdrOld.entries()) {
     if (k === 'access-control-allow-origin' ||
         k === 'access-control-expose-headers' ||
@@ -123,8 +146,31 @@ async function handler(req) {
   resHdrNew.set('vary', vary)
   resHdrNew.set('--s', res.status)
 
-  return new Response(res.body, {
-    status: 200,
+  // verify
+  const newLen = resHdrOld.get('content-length') || ''
+  const newEtag = resHdrOld.get('etag') || ''
+
+  const badLen = (rawLen !== newLen)
+  const badEtag = (rawEtag && rawEtag !== newEtag)
+
+  // resHdrNew.set('--l', rawLen + ',' + newLen)
+  // resHdrNew.set('--e', rawEtag + ',' + newEtag)
+
+  let status = 200
+  let body = res.body
+
+  if (badLen) {
+    status = 400
+    body = `bad len (old: ${rawLen} new: ${newLen})`
+    resHdrNew.set('cache-control', 'no-cache')
+  }
+  // else if (badEtag) {
+  //   status = 400
+  //   body = `bad etag (old: ${rawEtag} new: ${newEtag})`
+  // }
+
+  return new Response(body, {
+    status,
     headers: resHdrNew,
   })
 }
