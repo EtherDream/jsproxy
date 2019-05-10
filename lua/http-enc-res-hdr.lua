@@ -3,16 +3,6 @@
 -- 备注：
 -- aceh = HTTP 返回头的 access-control-expose-headers 字段
 
-
---  
-if
-  ngx.req.get_method() == 'GET' and
-  not ngx.ctx._hasCookie
-then
-
-end
-
-
 -- 无论浏览器是否支持，aceh 始终包含 *
 local expose = '*'
 
@@ -21,6 +11,133 @@ local detail = ngx.ctx._acehOld
 
 -- 由于接口路径固定，为避免被缓存，以请求头的 --url 值区分缓存
 local vary = '--url'
+
+
+local function addHdr(k, v)
+  ngx.header[k] = v
+  if detail then
+    expose = expose .. ',' .. k
+  end
+end
+
+
+local function flushHdr()
+  if detail then
+    expose = expose .. ',--s'
+    -- 该字段不在 aceh 中，如果浏览器能读取到，说明支持 * 通配
+    ngx.header['--t'] = '1'
+  end
+
+  ngx.header['access-control-expose-headers'] = expose
+  ngx.header['access-control-allow-origin'] = '*'
+  ngx.header['vary'] = vary
+
+  local status = ngx.status
+  if
+    status == 301 or
+    status == 302 or
+    status == 303 or
+    status == 307 or
+    status == 308
+  then
+    ngx.status = status + 10
+  end
+  ngx.header['--s'] = status
+end
+
+
+local function addVary(v)
+  if type(v) == 'table' then
+    vary = vary .. ',' .. table.concat(v, ',')
+  else
+    vary = vary .. ',' .. v
+  end
+end
+
+
+local function nodeSwitched()
+  local status = ngx.status
+  if status ~= 200 and status ~= 206 then
+    return false
+  end
+
+  local level = ngx.ctx._level
+  if level == nil or level == 0 then
+    return false
+  end
+
+  if ngx.req.get_method() ~= 'GET' then
+    return false
+  end
+
+  if ngx.header['set-cookie'] ~= nil then
+    return false
+  end
+
+  local resLenStr = ngx.header['content-length']
+  if resLenStr == nil then
+    return false
+  end
+
+  -- 小于 400KB 的资源不走加速
+  local resLenNum = tonumber(resLenStr)
+  if resLenNum == nil or resLenNum < 1000 * 400 then
+    return false
+  end
+
+  -- -- cache time
+  -- local ccStr = ngx.header['cache-control']
+  -- if ccStr == nil then
+  --   return false
+  -- end
+  -- if type(ccStr) == 'table' then
+  --   ccStr = table.concat(ccStr, ',')
+  -- end
+
+  -- -- `cache-control: xxxxx, max-age=31536000, xxxxx`
+  -- local regex = [[(?:^|;\s*)max-age=(\d+)]]
+  -- local m = ngx.re.match(ccStr, regex, 'oi')
+  -- if m == nil then
+  --   return false
+  -- end
+
+  -- local seconds = tonumber(m[1])
+  -- if seconds == nil then
+  --   return false
+  -- end
+
+  -- if seconds < 3600 * 24 then
+  --   return false
+  -- end
+
+  local addr = ngx.var.upstream_addr or ''
+  local etag = ngx.header['etag'] or ''
+  local last = ngx.header['last-modified'] or ''
+  -- TODO: , -> ,,
+  local info = addr .. ',' .. resLenStr .. ',' .. etag .. ',' .. last
+
+  -- clear all res headers
+  local h, err = ngx.resp.get_headers()
+  for k, v in pairs(h) do
+    ngx.header[k] = nil
+  end
+
+  addHdr('--raw-info', info)
+  addHdr('--switched', '1')
+
+  ngx.header['cache-control'] = 'no-cache'
+  ngx.var._switched = resLenStr
+  ngx.ctx._switched = true
+
+  flushHdr()
+  return true
+end
+
+
+if nodeSwitched() then
+  return
+end
+
 
 local h, err = ngx.resp.get_headers()
 for k, v in pairs(h) do
@@ -32,30 +149,18 @@ for k, v in pairs(h) do
     k == 'set-cookie'
   then
     if type(v) == 'table' then
+      -- 重复的字段，例如 Set-Cookie
+      -- 转换成 1-Set-Cookie, 2-Set-Cookie, ...
       for i = 1, #v do
-        local x = i .. '-' .. k
-        ngx.header[x] = v[i]
-
-        if detail then
-          expose = expose .. ',' .. x
-        end
+        addHdr(i .. '-' .. k, v[i])
       end
     else
-      local x = '--' .. k
-      ngx.header[x] = v
-
-      if detail then
-        expose = expose .. ',' .. x
-      end
+      addHdr('--' .. k, v)
     end
     ngx.header[k] = nil
 
   elseif k == 'vary' then
-    if type(v) == 'table' then
-      vary = vary .. ',' .. table.concat(v, ',')
-    else
-      vary = vary .. ',' .. v
-    end
+    addVary(v)
 
   elseif detail and
     -- 非简单头无法被 fetch 读取，需添加到 aceh 列表 --
@@ -71,13 +176,4 @@ for k, v in pairs(h) do
   end
 end
 
-if detail then
-  expose = expose .. ',--s'
-  ngx.header['--t'] = '1'
-end
-
-ngx.header['access-control-expose-headers'] = expose
-ngx.header['access-control-allow-origin'] = '*'
-ngx.header['vary'] = vary
-ngx.header['--s'] = ngx.status
-ngx.status = 200
+flushHdr()
