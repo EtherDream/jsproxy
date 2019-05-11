@@ -6,19 +6,18 @@ if ngx.worker.id() ~= 0 then
 end
 
 local function buildDevTrafficFn(dev)
-  --       0     1       2    3    4    5     6          7
-  -- eth0: bytes packets errs drop fifo frame compressed multicast
-  --       bytes packets errs drop fifo colls carrier    compressed
-  local regex = dev .. ':%s+(%d+)%s+' .. ('%d+%s+'):rep(7) .. '(%d+)'
+  local regex = dev ..
+    [[:\s+(\d+)\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+\d+\s+(\d+)]]
+  --        0      1     2     3     4     5     6     7    | 8
+  -- eth0: bytes packets errs drop fifo frame compress multi| bytes 
 
   local lastRxBytes = 0
   local lastTxBytes = 0
 
   return function(str)
-    local
-      sRxBytes,
-      sTxBytes
-    = str:match(regex)
+    local m = ngx.re.match(str, regex, 'oi')
+    local sRxBytes = m[1]
+    local sTxBytes = m[2]
 
     if sTxBytes == nil then
       return '0,0'
