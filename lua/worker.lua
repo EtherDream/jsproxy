@@ -16,6 +16,9 @@ local function buildDevTrafficFn(dev)
 
   return function(str)
     local m = ngx.re.match(str, regex, 'oi')
+    if m == nil then
+      return '0,0'
+    end
     local sRxBytes = m[1]
     local sTxBytes = m[2]
 

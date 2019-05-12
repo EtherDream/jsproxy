@@ -3,11 +3,12 @@
 
 HOST=etherdream.com
 NODE=(
-  node-aliyun-hk
-  node-aliyun-sg
-  node-bwh-los
-  node-justhost-moscow
-  node-bungee
+  # node-aliyun-hk
+  # node-aliyun-sg
+  # node-bwh-los
+  # node-justhost-moscow
+  # node-bungee
+  node-justhost-novosibirsk
 )
 for v in ${NODE[@]}; do
   echo "$v upload ..."
