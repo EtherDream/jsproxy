@@ -44,9 +44,12 @@ yum install -y \
 ~/server/run.sh
 ```
 
-访问：https://zjcqoo.github.io/#local （本地测试节点）
+访问：https://zjcqoo.github.io/#local （localhost 测试节点）
 
 ![](https://raw.githubusercontent.com/EtherDream/jsproxy-localtest/temp/preview.png)
+
+![](https://raw.githubusercontent.com/EtherDream/jsproxy-localtest/temp/preview2.png)
+
 
 > 如果一直显示加载中，可尝试修改 `nginx.conf` 中 DNS 配置。（默认为 `1.1.1.1`，有些地区很慢）
 
