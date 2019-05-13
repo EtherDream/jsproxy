@@ -44,9 +44,11 @@ yum install -y \
 ~/server/run.sh
 ```
 
-访问：https://etherdream.github.io/jsproxy-localtest/-----https://github.com/
+访问：https://zjcqoo.github.io/#local （本地测试节点）
 
 ![](https://raw.githubusercontent.com/EtherDream/jsproxy-localtest/temp/preview.png)
+
+> 如果一直显示加载中，可尝试修改 `nginx.conf` 中 DNS 配置。（默认为 `1.1.1.1`，有些地区很慢）
 
 注意，**当前项目只提供接口服务**，浏览器端脚本和页面不在本项目。这样做是为了让接口和界面分离，意义参见后续。
 
