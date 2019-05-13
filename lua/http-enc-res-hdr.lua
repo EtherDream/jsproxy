@@ -28,11 +28,12 @@ local function flushHdr()
     ngx.header['--t'] = '1'
   end
 
+  local status = ngx.status
+
   ngx.header['access-control-expose-headers'] = expose
   ngx.header['access-control-allow-origin'] = '*'
   ngx.header['vary'] = vary
-
-  local status = ngx.status
+  ngx.header['--s'] = status
   if
     status == 301 or
     status == 302 or
@@ -40,9 +41,9 @@ local function flushHdr()
     status == 307 or
     status == 308
   then
-    ngx.status = status + 10
+    status = status + 10
   end
-  ngx.header['--s'] = status
+  ngx.status = status
 end
 
 
