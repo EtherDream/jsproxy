@@ -2,9 +2,7 @@
 
 https://zjcqoo.github.io/-----https://www.google.com
 
-（目前仍在更新中，最好使用隐身模式访问，避免缓存导致的问题）
-
-[之前版本](https://github.com/EtherDream/jsproxy/tree/first-ver)已不再更新。
+（由于访问量较大，目前限制 Referer 只允许从 GitHub 访问）
 
 
 # 安装
