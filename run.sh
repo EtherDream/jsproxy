@@ -1,10 +1,4 @@
-NGX_BIN=/home/jsproxy/openresty/nginx/sbin/nginx
-
-# local test
-if [ ! -f $NGX_BIN ]; then
-  NGX_BIN=/usr/local/openresty/nginx/sbin/nginx
-fi
-
+NGX_BIN=$HOME/openresty/nginx/sbin/nginx
 CUR_DIR=$(cd `dirname $0` && pwd)
 
 if [ $1 ]; then
