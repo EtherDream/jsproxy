@@ -46,7 +46,7 @@ yum install -y \
 
 ## 测试
 
-启动服务：
+切换到 `jsproxy` 用户（`su - jsproxy`），启动服务：
 
 ```bash
 ~/server/run.sh
