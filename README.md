@@ -5,16 +5,24 @@ https://zjcqoo.github.io/-----https://www.google.com
 （由于访问量较大，目前限制 Referer 只允许从 GitHub 访问）
 
 
-# 安装
+# 一键安装
+
+```sh
+curl https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh | sh
+```
+
+（暂时只支持 Linux x64 版本。如果安装失败，尝试手动安装）
+
+
+# 手动安装
 
 新建一个 `jsproxy:nobody` 用户，在其主目录安装 nginx：
 
 ```bash
 groupadd nobody
 useradd jsproxy -g nobody --create-home
-su jsproxy
+su - jsproxy
 
-cd ~
 git clone --depth=1 https://github.com/EtherDream/jsproxy.git server
 
 cd server
