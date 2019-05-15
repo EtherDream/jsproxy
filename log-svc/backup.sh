@@ -49,7 +49,7 @@ if (( $logsize > 100 * 1024 * 1024 )); then
 else
   # 日志不大，使用高强度压缩
   nice -n 19 \
-    ~/tools/brotli $logfile --rm
+    ~/brotli $logfile --rm
 fi
 
 echo "done"

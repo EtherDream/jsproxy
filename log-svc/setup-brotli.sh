@@ -5,9 +5,7 @@ git clone --depth 1 https://github.com/google/brotli.git
 cd brotli
 
 make
-
-mkdir -p ~/tools
-mv bin/brotli ~/tools
+mv bin/brotli ~
 
 cd ..
 rm -rf brotli
