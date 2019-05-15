@@ -2,9 +2,7 @@
 
 https://zjcqoo.github.io/-----https://www.google.com
 
-（目前仍在更新中，最好使用隐身模式访问，避免缓存导致的问题）
-
-[之前版本](https://github.com/EtherDream/jsproxy/tree/first-ver)已不再更新。
+（由于访问量较大，目前限制 Referer 只允许从 GitHub 访问）
 
 
 # 一键安装
@@ -13,7 +11,7 @@ https://zjcqoo.github.io/-----https://www.google.com
 curl https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh | sh
 ```
 
-（暂时只支持 Linux x64 版本。如果安装失败，尝试手动安装）
+（暂时只支持 Linux x64 版本。安装成功后自动开启服务。如果安装失败，尝试手动安装）
 
 
 # 手动安装
@@ -43,25 +41,38 @@ yum install -y \
 
 > nginx 最终安装在 `/home/jsproxy/openresty` 下，不会和系统已有的冲突。
 
-
-## 测试
-
-切换到 `jsproxy` 用户（`su - jsproxy`），启动服务：
+启动服务：
 
 ```bash
 ~/server/run.sh
 ```
 
-访问：https://zjcqoo.github.io/#local （localhost 测试节点）
+# 本地测试
+
+在浏览器中测试 127.0.0.1:8080 服务是否正常运行：
+
+https://zjcqoo.github.io/#local
 
 ![](https://raw.githubusercontent.com/EtherDream/jsproxy-localtest/temp/preview.png)
 
 ![](https://raw.githubusercontent.com/EtherDream/jsproxy-localtest/temp/preview2.png)
 
-
 > 如果一直显示加载中，可尝试修改 `nginx.conf` 中 DNS 配置。（默认为 `1.1.1.1`，有些地区很慢）
 
 注意，**当前项目只提供接口服务**，浏览器端脚本和页面不在本项目。这样做是为了让接口和界面分离，意义参见后续。
+
+
+# 远程测试
+
+如果服务器没有桌面环境无法使用浏览器，可尝试执行：
+
+```sh
+curl http://服务器IP:8080/http \
+  -H 'Origin: http://localhost' \
+  -H '--url: https://www.baidu.com/'
+```
+
+观察返回内容是否正常。
 
 
 # 部署
