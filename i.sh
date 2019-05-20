@@ -2,7 +2,7 @@
 
 CDN=https://cdn.jsdelivr.net/gh/etherdream/jsproxy-bin@master
 
-JSPROXY_VER=0.0.6
+JSPROXY_VER=0.0.8
 PCRE_VER=8.43
 ZLIB_VER=1.2.11
 OPENSSL_VER=1.1.1b
