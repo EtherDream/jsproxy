@@ -42,14 +42,7 @@ sleep 1
 #
 echo "compress $logtime ($logsize bytes)"
 
-if (( $logsize > 100 * 1024 * 1024 )); then
-  # 日志较大，使用快速压缩
-  nice -n 19 \
-    gzip $logfile
-else
-  # 日志不大，使用高强度压缩
-  nice -n 19 \
-    ~/brotli $logfile --rm
-fi
+nice -n 19 \
+  gzip $logfile
 
 echo "done"
