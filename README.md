@@ -55,19 +55,6 @@ tail server/nginx/logs/proxy.log
 目前暂未实现开机自启动。
 
 
-# 远程测试
-
-如果服务器没有桌面环境无法使用浏览器，可尝试执行：
-
-```sh
-curl http://服务器IP:8080/http \
-  -H 'Origin: http://localhost' \
-  -H '--url: https://www.baidu.com/'
-```
-
-观察返回内容是否正常。
-
-
 # 部署
 
 ## 客户端
