@@ -21,7 +21,7 @@ curl -O https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh && bash
 ```bash
 curl http://服务器IP:8080/http \
   -H '--url: https://raw.githubusercontent.com/EtherDream/jsproxy/master/test/works.txt' \
-  -H 'Origin: http://localhost' 
+  -H 'Origin: http://localhost'
 ```
 
 正常情况下，显示 `ok`。如果无法连接，检查 8080/8443 端口是否添加到防火墙。
