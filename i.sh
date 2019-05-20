@@ -2,7 +2,7 @@
 
 CDN=https://cdn.jsdelivr.net/gh/etherdream/jsproxy-bin@master
 
-JSPROXY_VER=0.0.8
+JSPROXY_VER=0.0.9
 PCRE_VER=8.43
 ZLIB_VER=1.2.11
 OPENSSL_VER=1.1.1b
@@ -68,15 +68,6 @@ install_jsproxy() {
 
   log "启动服务 ..."
   ./server/run.sh
-
-  log "检测状态 ..."
-  ret=$(curl -s http://127.0.0.1:8080/ver)
-
-  if [[ "$ret" != "$JSPROXY_VER" ]]; then
-    err "服务启动异常！错误日志:"
-    tail server/nginx/logs/error.log
-    exit 1
-  fi
 
   log "服务已开启。后续维护参考 https://github.com/EtherDream/jsproxy"
 }
