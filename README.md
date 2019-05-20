@@ -20,7 +20,7 @@ curl -O https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh && bash
 
 ```bash
 curl http://服务器IP:8080/http \
-  -H '--url: https://git.io/fj85d' \
+  -H '--url: https://raw.githubusercontent.com/EtherDream/jsproxy/master/test/works.txt' \
   -H 'Origin: http://localhost' 
 ```
 
