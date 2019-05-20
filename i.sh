@@ -2,7 +2,7 @@
 
 CDN=https://cdn.jsdelivr.net/gh/etherdream/jsproxy-bin@master
 
-JSPROXY_VER=0.0.2
+JSPROXY_VER=0.0.4
 PCRE_VER=8.43
 ZLIB_VER=1.2.11
 OPENSSL_VER=1.1.1b
@@ -35,6 +35,15 @@ err() {
   output $COLOR_RED $1
 }
 
+is_running() {
+  RET=$(curl -s http://127.0.0.1:8080/)
+
+  if [[ "$RET" != *"origin"* ]]; then
+    return 0
+  fi
+  return 1
+}
+
 check_nginx() {
   NGX_EXE="$NGX_DIR/nginx/sbin/nginx"
   NGX_VER=$($NGX_EXE -v 2>&1)
@@ -43,15 +52,21 @@ check_nginx() {
     err "$NGX_EXE 无法执行！尝试编译安装"
     exit 1
   fi
-  log "nginx 安装完成。$NGX_VER"
+  log "$NGX_VER"
+  log "nginx path: $NGX_DIR"
 }
 
 install_jsproxy() {
-  log "下载 jsproxy ..."
+  log "下载代理服务 ..."
   curl -s -O $CDN/server-$JSPROXY_VER.tar.gz
 
+  if is_running ; then
+    warn "停止当前服务 ..."
+    ./server/run.sh quit
+  fi
+
   if [ -d "server" ]; then
-    backup="bak/$(date +%Y_%m_%d_%H_%M_%S)"
+    backup="$PWD/bak/$(date +%Y_%m_%d_%H_%M_%S)"
     warn "当前 server 目录备份到 $backup"
     mkdir -p $backup
     mv server $backup
@@ -64,13 +79,9 @@ install_jsproxy() {
   ./server/run.sh
 
   log "检测状态 ..."
-  RET=$(curl -s http://127.0.0.1:8080/)
-
-  ERR_LOG=$PWD/server/logs/error.log
-
-  if [[ "$RET" != *"origin"* ]]; then
-    err "服务启动异常。错误日志:"
-    tail $ERR_LOG -n100
+  if ! is_running ; then
+    err "服务启动异常！错误日志:"
+    tail server/nginx/logs/error.log -n100
     exit 1
   fi
 
@@ -134,14 +145,6 @@ install() {
   install_jsproxy
 }
 
-update() {
-  if [ ! -d "server" ]; then
-    err "当前不存在 server 目录，切换到主目录再更新"
-    exit 1
-  fi
-  install_jsproxy
-}
-
 pack() {
   log "压缩 openresty ..."
   GZIP=-9
@@ -159,18 +162,20 @@ main() {
     exit 1
   fi
 
-  log "创建用户 jsproxy ..."
-  groupadd nobody
-  useradd jsproxy -g nobody --create-home
+  if ! id -u jsproxy > /dev/null 2>&1 ; then
+    log "创建用户 jsproxy ..."
+    groupadd nobody > /dev/null 2>&1
+    useradd jsproxy -g nobody --create-home
+  fi
 
-  log "当前脚本移动到 $dst"
   src=$0
   dst=/home/jsproxy/i.sh
+  warn "当前脚本移动到 $dst"
 
   mv -f $src $dst
   chmod +x $dst
 
-  log "切换用户 jsproxy，执行安装脚本 ..."
+  log "切换到 jsproxy 用户，执行安装脚本 ..."
   su - jsproxy -c "$dst install"
 }
 
@@ -181,8 +186,6 @@ case "$1" in
 "compile") compile
   exit;;
 "pack") pack
-  exit;;
-"update") update
   exit;;
 *) main
   exit;;
