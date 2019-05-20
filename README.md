@@ -6,7 +6,7 @@ https://zjcqoo.github.io/-----https://www.google.com
 # 安装
 
 ```bash
-curl https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh | bash
+curl -O https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh && bash i.sh
 ```
 
 如果安装失败，尝试[源码编译安装](docs/compile.md)。

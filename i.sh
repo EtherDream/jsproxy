@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 
-CDN=https://cdn.jsdelivr.net/gh/etherdream/jsproxy-bin@master/
+CDN=https://cdn.jsdelivr.net/gh/etherdream/jsproxy-bin@master
 
 JSPROXY_VER=0.0.2
 PCRE_VER=8.43
 ZLIB_VER=1.2.11
 OPENSSL_VER=1.1.1b
 OPENRESTY_VER=1.15.8.1
-BROTLI_VER=1.0.7
 
 SUPPORTED_OS="Linux-x86_64"
 OS="$(uname)-$(uname -m)"
+
 NGX_DIR="$HOME/openresty"
 
 COLOR_RESET="\033[0m"
@@ -43,23 +43,22 @@ check_nginx() {
     err "$NGX_EXE 无法执行！尝试编译安装"
     exit 1
   fi
-  echo "nginx 安装完成。版本: $NGX_VER 路径: $NGX_DIR"
+  log "nginx 安装完成。$NGX_VER"
 }
 
 install_jsproxy() {
   log "下载 jsproxy ..."
   curl -s -O $CDN/server-$JSPROXY_VER.tar.gz
-  tar zxf server-$JSPROXY_VER.tar.gz
-  rm -f server-$JSPROXY_VER.tar.gz
 
   if [ -d "server" ]; then
-    backup=bak_$(date +%Y_%m_%d_%H_%M_%S)
+    backup="bak/$(date +%Y_%m_%d_%H_%M_%S)"
     warn "当前 server 目录备份到 $backup"
     mkdir -p $backup
     mv server $backup
   fi
 
-  mv server-$JSPROXY_VER server
+  tar zxf server-$JSPROXY_VER.tar.gz
+  rm -f server-$JSPROXY_VER.tar.gz
 
   log "启动服务 ..."
   ./server/run.sh
@@ -126,8 +125,8 @@ compile() {
 }
 
 install() {
-  log "下载 nginx ..."
-  curl -s -O $CDN/$OS/openresty-$OPENRESTY_VER.tar.gz
+  log "下载 nginx 程序 ..."
+  curl -O $CDN/$OS/openresty-$OPENRESTY_VER.tar.gz
   tar zxf openresty-$OPENRESTY_VER.tar.gz
   rm -f openresty-$OPENRESTY_VER.tar.gz
 
@@ -137,7 +136,7 @@ install() {
 
 update() {
   if [ ! -d "server" ]; then
-    echo "当前不存在 server 目录，切换到主目录再更新"
+    err "当前不存在 server 目录，切换到主目录再更新"
     exit 1
   fi
   install_jsproxy
@@ -164,10 +163,15 @@ main() {
   groupadd nobody
   useradd jsproxy -g nobody --create-home
 
+  log "当前脚本移动到 $dst"
+  src=$0
+  dst=/home/jsproxy/i.sh
+
+  mv -f $src $dst
+  chmod +x $dst
+
   log "切换用户 jsproxy，执行安装脚本 ..."
-  chmod +x $0
-  cp $0 /home/jsproxy/i.sh
-  su - jsproxy -c "/home/jsproxy/i.sh install"
+  su - jsproxy -c "$dst install"
 }
 
 
