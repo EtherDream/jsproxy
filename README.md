@@ -4,62 +4,52 @@ https://zjcqoo.github.io/-----https://www.google.com
 
 （由于访问量较大，目前限制 Referer 只允许从 GitHub 访问）
 
+```bash
+curl -O https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh && bash i.sh
+```
 
-# 一键安装
+如果安装失败，尝试[源码编译安装](docs/compile.md)。
+
+
+# 测试
+
+可通过如下命令，验证代理是否生效：
+
+```bash
+curl http://服务器IP:8080/http \
+  -H '--url: https://git.io/fj85d' \
+  -H 'Origin: http://localhost' 
+```
+
+正常情况下，显示 `ok`。如果无法连接，检查 8080/8443 端口是否添加到防火墙。
+
+其他错误，可尝试查看错误日志：
+
+```bash
+cat /home/jsproxy/server/nginx/logs/error.log
+```
+
+
+# 维护
 
 ```sh
-curl https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh | sh
-```
-
-（暂时只支持 Linux x64 版本。安装成功后自动开启服务。如果安装失败，尝试手动安装）
-
-
-# 手动安装
-
-新建一个 `jsproxy:nobody` 用户，在其主目录安装 nginx：
-
-```bash
-groupadd nobody
-useradd jsproxy -g nobody --create-home
+# 切换到 jsproxy 用户
 su - jsproxy
 
-git clone --depth=1 https://github.com/EtherDream/jsproxy.git server
+# 重启服务
+./run.sh reload
 
-cd server
-./setup-nginx.sh
+# 关闭服务（参数和 nginx -s 相同）
+./run.sh quit
+
+# 启动服务
+./run.sh
+
+# 查看代理日志
+tail server/nginx/logs/proxy.log
 ```
 
-安装过程若有依赖缺失，可尝试（CentOS 为例）：
-
-```bash
-yum install -y \
-	gcc gcc-c++ \
-	pcre pcre-devel \
-	openssl openssl-devel \
-	zlib zlib-devel
-```
-
-> nginx 最终安装在 `/home/jsproxy/openresty` 下，不会和系统已有的冲突。
-
-启动服务：
-
-```bash
-~/server/run.sh
-```
-
-# 本地测试
-
-在浏览器中测试 127.0.0.1:8080 服务是否正常运行：
-
-https://zjcqoo.github.io/#local
-
-![](https://raw.githubusercontent.com/EtherDream/jsproxy-localtest/temp/preview.png)
-
-![](https://raw.githubusercontent.com/EtherDream/jsproxy-localtest/temp/preview2.png)
-
-> 如果一直显示加载中，可尝试修改 `nginx.conf` 中 DNS 配置。（默认为 `1.1.1.1`，有些地区很慢）
-
-注意，**当前项目只提供接口服务**，浏览器端脚本和页面不在本项目。这样做是为了让接口和界面分离，意义参见后续。
+目前暂未实现开机自启动。
 
 
 # 远程测试
@@ -107,18 +97,15 @@ https://myhost.github.io     'my';
 
 # 安全策略
 
-如果不希望代理访问内网，可执行 `setup-ipset.sh`，避免 SSRF 风险。
+如果不希望代理访问内网，可执行 `setup-ipset.sh` 避免 SSRF 风险：
+
+```bash
+/home/jsproxy/setup-ipset.sh
+```
+
+> 需要 root 权限，依赖 `ipset` 命令
 
 该脚本可禁止 `jsporxy` 用户访问内网（针对 TCP）。nginx 之外的程序也生效，但不影响其他用户。
-
-
-# 服务管理
-
-重启服务：`./run.sh reload`
-
-关闭服务：`./run.sh quit`
-
-参数和 nginx -s 相同。
 
 
 # 项目特点
