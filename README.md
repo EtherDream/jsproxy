@@ -4,6 +4,9 @@ https://zjcqoo.github.io/-----https://www.google.com
 
 （由于访问量较大，目前限制 Referer 只允许从 GitHub 访问）
 
+
+# 安装
+
 ```bash
 curl -O https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh && bash i.sh
 ```
