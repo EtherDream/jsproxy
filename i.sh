@@ -2,7 +2,7 @@
 
 CDN=https://cdn.jsdelivr.net/gh/etherdream/jsproxy-bin@master
 
-JSPROXY_VER=0.0.4
+JSPROXY_VER=0.0.6
 PCRE_VER=8.43
 ZLIB_VER=1.2.11
 OPENSSL_VER=1.1.1b
@@ -35,15 +35,6 @@ err() {
   output $COLOR_RED $1
 }
 
-is_running() {
-  RET=$(curl -s http://127.0.0.1:8080/)
-
-  if [[ "$RET" != *"origin"* ]]; then
-    return 0
-  fi
-  return 1
-}
-
 check_nginx() {
   NGX_EXE="$NGX_DIR/nginx/sbin/nginx"
   NGX_VER=$($NGX_EXE -v 2>&1)
@@ -60,8 +51,8 @@ install_jsproxy() {
   log "下载代理服务 ..."
   curl -s -O $CDN/server-$JSPROXY_VER.tar.gz
 
-  if is_running ; then
-    warn "停止当前服务 ..."
+  if [ -x ./server/run.sh ]; then
+    warn "尝试停止当前服务 ..."
     ./server/run.sh quit
   fi
 
@@ -79,9 +70,11 @@ install_jsproxy() {
   ./server/run.sh
 
   log "检测状态 ..."
-  if ! is_running ; then
+  ret=$(curl -s http://127.0.0.1:8080/ver)
+
+  if [[ "$ret" != "$JSPROXY_VER" ]]; then
     err "服务启动异常！错误日志:"
-    tail server/nginx/logs/error.log -n100
+    tail server/nginx/logs/error.log
     exit 1
   fi
 
@@ -145,10 +138,16 @@ install() {
   install_jsproxy
 }
 
+update() {
+  install_jsproxy
+}
+
 pack() {
   log "压缩 openresty ..."
   GZIP=-9
   tar cvzf openresty.tar.gz openresty
+  log "done"
+  ls -la
 }
 
 main() {
@@ -184,6 +183,8 @@ case "$1" in
 "install") install
   exit;;
 "compile") compile
+  exit;;
+"update") update
   exit;;
 "pack") pack
   exit;;
