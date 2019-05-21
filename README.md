@@ -2,7 +2,7 @@
 
 https://zjcqoo.github.io/-----https://www.google.com
 
-（由于访问量较大，目前限制 Referer 只允许从 GitHub 访问）
+（目前仍在更新中，如有问题尝试用隐身模式访问）
 
 
 # 安装
