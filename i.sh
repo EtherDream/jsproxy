@@ -19,10 +19,10 @@ COLOR_GREEN="\033[32m"
 COLOR_YELLOW="\033[33m"
 
 output() {
-  color=$1
+  local color=$1
   shift 1
-  sdata="$@"
-  stime=$(date "+%H:%M:%S")
+  local sdata=$@
+  local stime=$(date "+%H:%M:%S")
   printf "$color[jsproxy $stime]$COLOR_RESET $sdata\n"
 }
 log() {
@@ -36,14 +36,14 @@ err() {
 }
 
 check_nginx() {
-  NGX_EXE="$NGX_DIR/nginx/sbin/nginx"
-  NGX_VER=$($NGX_EXE -v 2>&1)
+  local ngx_exe="$NGX_DIR/nginx/sbin/nginx"
+  local ngx_ver=$($ngx_exe -v 2>&1)
 
-  if [[ "$NGX_VER" != *"nginx version:"* ]]; then
-    err "$NGX_EXE 无法执行！尝试编译安装"
+  if [[ "$ngx_ver" != *"nginx version:"* ]]; then
+    err "$ngx_exe 无法执行！尝试编译安装"
     exit 1
   fi
-  log "$NGX_VER"
+  log "$ngx_ver"
   log "nginx path: $NGX_DIR"
 }
 
@@ -73,10 +73,10 @@ install_jsproxy() {
 }
 
 compile() {
-  TMP_DIR="$PWD/__tmp__"
+  local tmp_dir="$PWD/__tmp__"
 
-  mkdir -p $TMP_DIR
-  cd $TMP_DIR
+  mkdir -p $tmp_dir
+  cd $tmp_dir
 
   log "下载 pcre 源码 ..."
   curl -O https://ftp.pcre.org/pub/pcre/pcre-$PCRE_VER.tar.gz
@@ -113,7 +113,7 @@ compile() {
   make install
 
   log "编译完成"
-  rm -rf $TMP_DIR
+  rm -rf $tmp_dir
 
   check_nginx
   install_jsproxy
@@ -158,8 +158,8 @@ main() {
     useradd jsproxy -g nobody --create-home
   fi
 
-  src=$0
-  dst=/home/jsproxy/i.sh
+  local src=$0
+  local dst=/home/jsproxy/i.sh
   warn "当前脚本移动到 $dst"
 
   mv -f $src $dst
