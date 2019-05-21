@@ -1,10 +1,8 @@
 # 完整更新日志
 
-## v0.0.1
+## v0.0.1
 
-全选的 URL 模型，取代 [之前版本](https://github.com/EtherDream/jsproxy/tree/first-ver)。
-
-[查看详细](v0.0.1.md)
+全选的 URL 模型，取代 [之前版本](https://github.com/EtherDream/jsproxy/tree/first-ver)。[查看详细](v0.0.1.md)
 
 
 ## 开发中...
