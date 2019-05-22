@@ -1,29 +1,97 @@
-# 简介
+# 手动安装
 
-默认的安装方式，是直接下载编译后的 nginx 程序。目前只提供 Linux x64 系统的文件，其他系统暂不支持，需要从源码编译。
+## 创建用户
 
-此外，对于没有 root 权限的系统，也需通过源码编译，从而改变 nginx 的安装位置。（nginx 程序路径是在编译时通过 `--prefix` 参数指定的，安装后移动程序位置会导致某些链接库无法加载。如果有好的解决方案多指教~）
-
-
-# 依赖
-
-需要安装 make、gcc 等，参考 nginx 的编译。
-
-无需安装 pcre、zlib、openssl 开发库，安装脚本会自动下载源码。
-
-
-# 脚本
+新建一个名为 `jsproxy` 用户（`nobody` 组），并切换：
 
 ```bash
-curl -O https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh
-bash i.sh compile
+groupadd nobody
+useradd jsproxy -g nobody --create-home
+
+su - jsproxy
 ```
 
-nginx 最终安装在 `$HOME/openresty` 目录下。代理服务安装在当前 `server` 目录下。
+非 Linux 系统，或者无 root 权限的设备，可忽略。
 
 
-# 支持
+## 安装 nginx
 
-目前测试过的系统：
+下载、编译、安装 nginx。本项目使用 [OpenResty](https://openresty.org/en/)。
 
-* OSX
+```bash
+cd $(mktemp -d)
+
+curl -O https://www.openssl.org/source/openssl-1.1.1b.tar.gz
+tar zxf openssl-*
+
+curl -O https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
+tar zxf pcre-*
+
+curl -O https://zlib.net/zlib-1.2.11.tar.gz
+tar zxf zlib-*
+
+curl -O https://openresty.org/download/openresty-1.15.8.1.tar.gz
+tar zxf openresty-*
+cd openresty-*
+
+export PATH=$PATH:/sbin
+
+./configure \
+  --with-openssl=../openssl-1.1.1b \
+  --with-pcre=../pcre-8.43 \
+  --with-zlib=../zlib-1.2.11 \
+  --with-http_v2_module \
+  --with-http_ssl_module \
+  --with-pcre-jit \
+  --prefix=$HOME/openresty
+
+make
+make install
+```
+
+其中 `configure` 的参数 `--prefix` 指定 nginx 安装路径，这里为方便设为用户主目录。
+
+> 注意编译后的 nginx 程序不能改变位置，否则会启动失败
+
+测试能否执行：
+
+```bash
+$HOME/openresty/nginx/sbin/nginx -h
+```
+
+
+## 安装代理程序
+
+下载本项目。其本质就是一堆 nginx 配置：
+
+```bash
+git clone --depth=1 https://github.com/EtherDream/jsproxy.git server
+```
+
+开启代理服务：
+
+```bash
+cd server
+./run.sh
+```
+
+更新使用 git 即可。
+
+
+## 编译问题
+
+编译前需要安装 make、gcc 等工具，具体可参考 nginx 编译。
+
+无需安装 pcre-devel、openssl-devel、zlib-devel 依赖，已使用源码编译。
+
+
+## 用户问题
+
+为什么要创建一个 `jsproxy` 用户运行该服务？
+
+因为该服务无需 root，所以更低的权限可以减少风险。另外在防 SSRF 脚本 `setup-ipset.sh` 中，是通过 iptalbes 的 `uid-owner` 策略阻止 `jsprxoy` 这个特定用户访问内网的。
+
+
+## 支持系统
+
+目前测试了 OSX 系统，其他还在测试中。。。
