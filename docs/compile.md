@@ -13,10 +13,12 @@ su - jsproxy
 
 非 Linux 系统，或者无 root 权限的设备，可忽略。
 
+> 为什么要创建用户？因为本服务无需 root，所以使用低权限减少风险。另外在防 SSRF 脚本 `setup-ipset.sh` 中，是通过 iptalbes 的 `uid-owner` 策略阻止 `jsprxoy` 这个特定用户访问内网的。
+
 
 ## 安装 nginx
 
-下载、编译、安装 nginx。本项目使用 [OpenResty](https://openresty.org/en/)。
+本项目使用 [OpenResty](https://openresty.org/en/)。编译前需确保 make、gcc 等工具存在。
 
 ```bash
 cd $(mktemp -d)
@@ -76,20 +78,6 @@ cd server
 ```
 
 更新使用 git 即可。
-
-
-## 编译问题
-
-编译前需要安装 make、gcc 等工具，具体可参考 nginx 编译。
-
-无需安装 pcre-devel、openssl-devel、zlib-devel 依赖，已使用源码编译。
-
-
-## 用户问题
-
-为什么要创建一个 `jsproxy` 用户运行该服务？
-
-因为该服务无需 root，所以更低的权限可以减少风险。另外在防 SSRF 脚本 `setup-ipset.sh` 中，是通过 iptalbes 的 `uid-owner` 策略阻止 `jsprxoy` 这个特定用户访问内网的。
 
 
 ## 支持系统
