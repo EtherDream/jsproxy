@@ -22,7 +22,7 @@ https://zjcqoo.github.io/-----https://www.google.com
 curl -O https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh && bash i.sh
 ```
 
-如果安装失败，尝试[源码编译安装](docs/compile.md)。
+如果安装失败，尝试[手动安装](docs/compile.md)。
 
 
 # 测试

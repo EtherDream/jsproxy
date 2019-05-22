@@ -3,9 +3,6 @@
 CDN=https://cdn.jsdelivr.net/gh/etherdream/jsproxy-bin@master
 
 JSPROXY_VER=0.0.9
-PCRE_VER=8.43
-ZLIB_VER=1.2.11
-OPENSSL_VER=1.1.1b
 OPENRESTY_VER=1.15.8.1
 
 SUPPORTED_OS="Linux-x86_64"
@@ -35,7 +32,12 @@ err() {
   output $COLOR_RED $1
 }
 
-check_nginx() {
+install() {
+  log "下载 nginx 程序 ..."
+  curl -O $CDN/$OS/openresty-$OPENRESTY_VER.tar.gz
+  tar zxf openresty-$OPENRESTY_VER.tar.gz
+  rm -f openresty-$OPENRESTY_VER.tar.gz
+
   local ngx_exe="$NGX_DIR/nginx/sbin/nginx"
   local ngx_ver=$($ngx_exe -v 2>&1)
 
@@ -45,9 +47,7 @@ check_nginx() {
   fi
   log "$ngx_ver"
   log "nginx path: $NGX_DIR"
-}
 
-install_jsproxy() {
   log "下载代理服务 ..."
   curl -s -O $CDN/server-$JSPROXY_VER.tar.gz
 
@@ -70,75 +70,6 @@ install_jsproxy() {
   ./server/run.sh
 
   log "服务已开启。后续维护参考 https://github.com/EtherDream/jsproxy"
-}
-
-compile() {
-  local tmp_dir="$PWD/__tmp__"
-
-  mkdir -p $tmp_dir
-  cd $tmp_dir
-
-  log "下载 pcre 源码 ..."
-  curl -O https://ftp.pcre.org/pub/pcre/pcre-$PCRE_VER.tar.gz
-  tar zxf pcre-$PCRE_VER.tar.gz
-
-  log "下载 zlib 源码 ..."
-  curl -O https://zlib.net/zlib-$ZLIB_VER.tar.gz
-  tar zxf zlib-$ZLIB_VER.tar.gz
-
-  log "下载 openssl 源码 ..."
-  curl -O https://www.openssl.org/source/openssl-$OPENSSL_VER.tar.gz
-  tar zxf openssl-$OPENSSL_VER.tar.gz
-
-  log "下载 nginx 源码 ..."
-  curl -O https://openresty.org/download/openresty-$OPENRESTY_VER.tar.gz
-  tar zxf openresty-$OPENRESTY_VER.tar.gz
-
-  cd openresty-$OPENRESTY_VER
-
-  export PATH=$PATH:/sbin
-
-  log "配置中 ..."
-  ./configure \
-    --with-openssl=../openssl-$OPENSSL_VER \
-    --with-pcre=../pcre-$PCRE_VER \
-    --with-zlib=../zlib-$ZLIB_VER \
-    --with-http_v2_module \
-    --with-http_ssl_module \
-    --with-pcre-jit \
-    --prefix=$NGX_DIR
-
-  log "编译中 ..."
-  make
-  make install
-
-  log "编译完成"
-  rm -rf $tmp_dir
-
-  check_nginx
-  install_jsproxy
-}
-
-install() {
-  log "下载 nginx 程序 ..."
-  curl -O $CDN/$OS/openresty-$OPENRESTY_VER.tar.gz
-  tar zxf openresty-$OPENRESTY_VER.tar.gz
-  rm -f openresty-$OPENRESTY_VER.tar.gz
-
-  check_nginx
-  install_jsproxy
-}
-
-update() {
-  install_jsproxy
-}
-
-pack() {
-  log "压缩 openresty ..."
-  GZIP=-9
-  tar cvzf openresty.tar.gz openresty
-  log "done"
-  ls -la
 }
 
 main() {
@@ -170,15 +101,8 @@ main() {
 }
 
 
-case "$1" in
-"install") install
-  exit;;
-"compile") compile
-  exit;;
-"update") update
-  exit;;
-"pack") pack
-  exit;;
-*) main
-  exit;;
-esac
+if [[ "$1" == "install" ]]; then
+  install
+else
+  main
+fi
