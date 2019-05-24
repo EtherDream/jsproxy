@@ -7,11 +7,11 @@ https://zjcqoo.github.io/-----https://www.google.com
 
 # 最近更新
 
+* 2019-05-23 前端配置文件动态加载，无需打包脚本。目前可在 github 上直接修改配置在线部署
+
 * 2019-05-21 首页静态资源从 CDN 加载
 
 * 2019-05-20 安装脚本更新
-
-* 2019-05-17 常用网站静态资源从 CDN 加载
 
 [查看更多](changelogs)
 
@@ -66,34 +66,39 @@ tail server/nginx/logs/proxy.log
 目前暂未实现开机自启动。
 
 
-# 部署
+# 快捷部署
 
-## 客户端
-
-浏览器端项目位于：https://github.com/EtherDream/jsproxy-browser
-
-准备一个域名（例如 `example.com`），参考备注，将其添加到线路地址。
-
-> 注意：端口是 8443，不是 8080。因为 Service Worker 只有本地测试可用 HTTP 协议，其他场合必须 HTTPS。
-
-编译脚本，将 `www` 目录发布到 Web 空间（例如 `https://myhost.github.io`）
-
-（目前还不完善，之后将实现动态配置，无需修改 JS 代码）
-
+假如你的 github 用户名为 `mygithub`，域名为 `example.com`。
 
 ## 服务端
 
-解析 `example.com` 到自己的服务器。给该域名申请证书，保存到 `cert/example.com/` 目录下。（可参考 `gen-cert` 目录，使用脚本自动生成）
+1.解析域名到自己服务器。申请证书，保存到 `cert/example.com/` 目录下
 
-修改 `nginx.conf` 中域名相关的配置（默认被注释）。
+2.修改 `nginx.conf` 中域名和证书的配置（默认被注释）
 
-在 `allowed-sites.conf` 中添加一行 Web 空间的地址，例如：
+3.在 `allowed-sites.conf` 中添加 Web 空间的地址：
 
 ```
-https://myhost.github.io     'my';
+https://mygithub.github.io     'my';
 ```
 
-重启服务。访问 `https://myhost.github.io` 预览。
+4.执行 `./run.sh reload` 重启服务
+
+
+## 客户端
+
+1.fork `https://github.com/zjcqoo/zjcqoo.github.io`
+
+2.进入 Settings 页面重命名成 `mygithub.github.io`
+
+3.进入 `conf.js` 在线编译
+
+4.访问 `https://mygithub.github.io` 预览
+
+> 本项目支持非首页路径。可重命名成任何名字（例如 x），创建 `gh-pages` 分支，通过 `https://用户名.github.io/x` 也能访问。
+
+
+浏览器端源码可查看：https://github.com/EtherDream/jsproxy-browser
 
 
 # 安全策略
