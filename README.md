@@ -87,15 +87,15 @@ https://mygithub.github.io     'my';
 
 ## 客户端
 
-1.fork `https://github.com/zjcqoo/zjcqoo.github.io`
+1.进入 https://github.com/zjcqoo/zjcqoo.github.io 点击 fork。
 
-2.进入 Settings 页面重命名成 `mygithub.github.io`
+2.进入 Settings 页面，仓库重命名成 `mygithub.github.io`
 
-3.进入 `conf.js` 在线编译
+3.进入 `conf.js` 文件，在线编译
 
 4.访问 `https://mygithub.github.io` 预览
 
-> 本项目支持非首页路径。可重命名成任何名字（例如 x），创建 `gh-pages` 分支，通过 `https://用户名.github.io/x` 也能访问。
+> 本项目支持子路径。仓库可重命名成任何名字（例如 x），然后创建 `gh-pages` 分支，通过 `https://用户名.github.io/x` 也能访问。
 
 
 浏览器端源码可查看：https://github.com/EtherDream/jsproxy-browser
