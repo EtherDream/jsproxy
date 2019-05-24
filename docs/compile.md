@@ -58,15 +58,16 @@ make install
 测试能否执行：
 
 ```bash
-$HOME/openresty/nginx/sbin/nginx -h
+~/openresty/nginx/sbin/nginx -h
 ```
 
 
 ## 安装代理程序
 
-下载本项目。其本质就是一堆 nginx 配置：
+下载本项目，其本质就是一堆 nginx 配置。推荐放在 `jsproxy` 用户的主目录：
 
 ```bash
+cd ~
 git clone --depth=1 https://github.com/EtherDream/jsproxy.git server
 ```
 
