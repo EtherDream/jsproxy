@@ -7,7 +7,7 @@ OPENRESTY_VER=1.15.8.1
 
 SUPPORTED_OS="Linux-x86_64"
 OS="$(uname)-$(uname -m)"
-
+USER=`whoami`
 NGX_DIR="$HOME/openresty"
 
 COLOR_RESET="\033[0m"
