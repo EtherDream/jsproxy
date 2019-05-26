@@ -8,7 +8,6 @@ OPENRESTY_VER=1.15.8.1
 SUPPORTED_OS="Linux-x86_64"
 OS="$(uname)-$(uname -m)"
 USER=`whoami`
-NGX_DIR="$HOME/openresty"
 
 COLOR_RESET="\033[0m"
 COLOR_RED="\033[31m"
@@ -47,7 +46,7 @@ gen_cert() {
   local acme=~/.acme.sh/acme.sh
   local domain=$ip.xip.io
 
-  local dist=./server/cert/$domain
+  local dist=server/cert/$domain
   mkdir -p $dist
 
   log "执行 acme.sh 脚本 ..."
@@ -55,7 +54,7 @@ gen_cert() {
     --issue \
     -d $domain \
     --keylength ec-256 \
-    --webroot ./server/acme
+    --webroot server/acme
 
   $acme \
     --install-cert \
@@ -68,22 +67,24 @@ gen_cert() {
 listen                8443 ssl http2;
 ssl_certificate       cert/$domain/ecc.cer;
 ssl_certificate_key   cert/$domain/ecc.key;
-" > ./server/cert.conf
+" > server/cert/cert.conf
 
   log "证书申请完成，重启服务 ..."
-  ./server/run.sh reload
+  server/run.sh reload
 
-  log "预览: https://zjcqoo.github.io/#test=$ip"
+  log "在线预览: https://zjcqoo.github.io/#test=$ip"
 }
 
 
 install() {
+  cd /home/jsproxy
+
   log "下载 nginx 程序 ..."
   curl -O $CDN/$OS/openresty-$OPENRESTY_VER.tar.gz
   tar zxf openresty-$OPENRESTY_VER.tar.gz
   rm -f openresty-$OPENRESTY_VER.tar.gz
 
-  local ngx_exe="$NGX_DIR/nginx/sbin/nginx"
+  local ngx_exe=openresty/nginx/sbin/nginx
   local ngx_ver=$($ngx_exe -v 2>&1)
 
   if [[ "$ngx_ver" != *"nginx version:"* ]]; then
@@ -98,12 +99,12 @@ install() {
   tar zxf jsproxy.tar.gz
   rm -f jsproxy.tar.gz
 
-  if [ -x ./server/run.sh ]; then
+  if [ -x server/run.sh ]; then
     warn "尝试停止当前服务 ..."
-    ./server/run.sh quit
+    server/run.sh quit
   fi
 
-  if [ -d "server" ]; then
+  if [ -d server ]; then
     backup="$PWD/bak/$(date +%Y_%m_%d_%H_%M_%S)"
     warn "当前 server 目录备份到 $backup"
     mkdir -p $backup
@@ -113,14 +114,14 @@ install() {
   mv jsproxy-$JSPROXY_VER server
 
   log "启动服务 ..."
-  ./server/run.sh
+  server/run.sh
 
   log "服务已开启"
   gen_cert
 }
 
 main() {
-  log "jsproxy 自动安装脚本开始执行 ..."
+  log "自动安装脚本开始执行"
 
   if [[ "$SUPPORTED_OS" != *"$OS"* ]]; then
     err "当前系统 $OS 不支持自动安装。尝试编译安装"
@@ -158,7 +159,6 @@ main() {
   log "切换到 jsproxy 用户，执行安装脚本 ..."
   su - jsproxy -c "$dst install"
 
-  log "恢复 80 端口 ..."
   local line=$(iptables -t nat -L --line-numbers | grep "acme challenge svc")
   iptables -t nat -D PREROUTING ${line%% *}
 
@@ -166,8 +166,11 @@ main() {
 }
 
 
-if [[ "$1" == "install" ]]; then
-  install
-else
-  main
-fi
+case $1 in
+"install")
+  install;;
+"cert")
+  gen_cert;;
+*)
+  main;;
+esac
