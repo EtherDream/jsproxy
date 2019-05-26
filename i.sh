@@ -2,7 +2,7 @@
 
 CDN=https://cdn.jsdelivr.net/gh/etherdream/jsproxy-bin@master
 
-JSPROXY_VER=0.0.10
+JSPROXY_VER=dev
 OPENRESTY_VER=1.15.8.1
 
 SUPPORTED_OS="Linux-x86_64"
@@ -94,7 +94,9 @@ install() {
   log "nginx path: $NGX_DIR"
 
   log "下载代理服务 ..."
-  curl -s -O $CDN/server-$JSPROXY_VER.tar.gz
+  curl -o jsproxy.tar.gz https://codeload.github.com/EtherDream/jsproxy/tar.gz/$JSPROXY_VER
+  tar zxf jsproxy.tar.gz
+  rm -f jsproxy.tar.gz
 
   if [ -x ./server/run.sh ]; then
     warn "尝试停止当前服务 ..."
@@ -108,8 +110,7 @@ install() {
     mv server $backup
   fi
 
-  tar zxf server-$JSPROXY_VER.tar.gz
-  rm -f server-$JSPROXY_VER.tar.gz
+  mv jsproxy-$JSPROXY_VER server
 
   log "启动服务 ..."
   ./server/run.sh
