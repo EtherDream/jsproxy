@@ -2,7 +2,7 @@
 
 CDN=https://cdn.jsdelivr.net/gh/etherdream/jsproxy-bin@master
 
-JSPROXY_VER=0.0.9
+JSPROXY_VER=0.0.10
 OPENRESTY_VER=1.15.8.1
 
 SUPPORTED_OS="Linux-x86_64"
@@ -46,14 +46,16 @@ gen_cert() {
 
   local acme=~/.acme.sh/acme.sh
   local domain=$ip.xip.io
-  local dist=./server/cert
+
+  local dist=./server/cert/$domain
+  mkdir -p $dist
 
   log "执行 acme.sh 脚本 ..."
   $acme \
     --issue \
     -d $domain \
     --keylength ec-256 \
-    --webroot ~/server/acme
+    --webroot ./server/acme
 
   $acme \
     --install-cert \
@@ -61,6 +63,12 @@ gen_cert() {
     --ecc \
     --key-file $dist/ecc.key \
     --fullchain-file $dist/ecc.cer
+
+  echo "
+listen                8443 ssl http2;
+ssl_certificate       cert/$domain/ecc.cer;
+ssl_certificate_key   cert/$domain/ecc.key;
+" > ./server/cert.conf
 
   log "证书申请完成，重启服务 ..."
   ./server/run.sh reload
