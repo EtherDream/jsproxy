@@ -1,0 +1,1 @@
+该目录存放 HTTPS 证书申请时的 challenge（由 acme.sh 写入），用于 Let's Encrypt 服务器的验证

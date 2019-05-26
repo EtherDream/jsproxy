@@ -32,6 +32,43 @@ err() {
   output $COLOR_RED $1
 }
 
+gen_cert() {
+  log "准备申请 HTTPS 证书，使用 服务器IP.xip.io 域名"
+
+  local ip_api="https://api.ipify.org"
+  log "正在获取服务器公网 IP，通过接口: $ip_api"
+
+  local ip=$(curl -s $ip_api)
+  log "服务器公网 IP: $ip"
+
+  log "安装 acme.sh 脚本 ..."
+  curl https://raw.githubusercontent.com/Neilpang/acme.sh/master/acme.sh | INSTALLONLINE=1  sh
+
+  local acme=~/.acme.sh/acme.sh
+  local domain=$ip.xip.io
+  local dist=./server/cert
+
+  log "执行 acme.sh 脚本 ..."
+  $acme \
+    --issue \
+    -d $domain \
+    --keylength ec-256 \
+    --webroot ~/server/acme
+
+  $acme \
+    --install-cert \
+    -d $domain \
+    --ecc \
+    --key-file $dist/ecc.key \
+    --fullchain-file $dist/ecc.cer
+
+  log "证书申请完成，重启服务 ..."
+  ./server/run.sh reload
+
+  log "预览: https://zjcqoo.github.io/#test=$ip"
+}
+
+
 install() {
   log "下载 nginx 程序 ..."
   curl -O $CDN/$OS/openresty-$OPENRESTY_VER.tar.gz
@@ -69,10 +106,13 @@ install() {
   log "启动服务 ..."
   ./server/run.sh
 
-  log "服务已开启。后续维护参考 https://github.com/EtherDream/jsproxy"
+  log "服务已开启"
+  gen_cert
 }
 
 main() {
+  log "jsproxy 自动安装脚本开始执行 ..."
+
   if [[ "$SUPPORTED_OS" != *"$OS"* ]]; then
     err "当前系统 $OS 不支持自动安装。尝试编译安装"
     exit 1
@@ -89,6 +129,16 @@ main() {
     useradd jsproxy -g nobody --create-home
   fi
 
+  warn "HTTPS 证书申请需要验证 80 端口，确保 TCP:80 已添加到防火墙"
+  warn "如果当前已有 80 端口的服务，将暂时无法收到数据"
+  iptables \
+    -m comment --comment "acme challenge svc" \
+    -t nat \
+    -I PREROUTING 1 \
+    -p tcp --dport 80 \
+    -j REDIRECT \
+    --to-ports 10080
+
   local src=$0
   local dst=/home/jsproxy/i.sh
   warn "当前脚本移动到 $dst"
@@ -98,6 +148,12 @@ main() {
 
   log "切换到 jsproxy 用户，执行安装脚本 ..."
   su - jsproxy -c "$dst install"
+
+  log "恢复 80 端口 ..."
+  local line=$(iptables -t nat -L --line-numbers | grep "acme challenge svc")
+  iptables -t nat -D PREROUTING ${line%% *}
+
+  log "安装完成。后续维护参考 https://github.com/EtherDream/jsproxy"
 }
 
 
