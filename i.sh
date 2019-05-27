@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-CDN=https://cdn.jsdelivr.net/gh/etherdream/jsproxy-bin@master
+BIN_URL=https://raw.githubusercontent.com/EtherDream/jsproxy-bin/master/
 
 JSPROXY_VER=dev
 OPENRESTY_VER=1.15.8.1
@@ -63,6 +63,11 @@ gen_cert() {
     --key-file $dist/ecc.key \
     --fullchain-file $dist/ecc.cer
 
+  if [ ! -s $dist/ecc.key ] || [ ! -s $dist/ecc.cer ]; then
+    err "证书申请失败！"
+    exit 1
+  fi
+
   echo "
 listen                8443 ssl http2;
 ssl_certificate       cert/$domain/ecc.cer;
@@ -80,7 +85,7 @@ install() {
   cd /home/jsproxy
 
   log "下载 nginx 程序 ..."
-  curl -O $CDN/$OS/openresty-$OPENRESTY_VER.tar.gz
+  curl -O $BIN_URL/$OS/openresty-$OPENRESTY_VER.tar.gz
   tar zxf openresty-$OPENRESTY_VER.tar.gz
   rm -f openresty-$OPENRESTY_VER.tar.gz
 
