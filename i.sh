@@ -77,7 +77,7 @@ ssl_certificate_key   cert/$domain/ecc.key;
   log "证书申请完成，重启服务 ..."
   server/run.sh reload
 
-  log "在线预览: https://zjcqoo.github.io/#test=$ip"
+  log "在线预览: https://zjcqoo.github.io/#test=$domain:8443"
 }
 
 
