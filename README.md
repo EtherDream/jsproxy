@@ -7,11 +7,7 @@ https://zjcqoo.github.io/-----https://www.google.com
 
 # 最近更新
 
-* 2019-05-23 前端配置文件动态加载，无需打包脚本。目前可在 github 上直接修改配置在线部署
-
-* 2019-05-21 首页静态资源从 CDN 加载
-
-* 2019-05-20 安装脚本更新
+* 2019-05-26 安装时自动申请证书（使用 xip.io 域名），安装后即可预览
 
 [查看更多](changelogs)
 
@@ -19,29 +15,21 @@ https://zjcqoo.github.io/-----https://www.google.com
 # 安装
 
 ```bash
-curl -O https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh && bash i.sh
+curl -O https://raw.githubusercontent.com/EtherDream/jsproxy/dev/i.sh && bash i.sh
 ```
 
-如果安装失败，尝试[手动安装](docs/compile.md)。
+* 自动安装目前只支持 Linux x64，并且需要 root 权限
+
+* 安装过程中 80 端口能被外网访问（申请 HTTPS 证书）
+
+无法满足上述条件，或想了解安装细节，可尝试[手动安装](docs/setup.md)。
 
 
-# 测试
+# 预览
 
-可通过如下命令，验证代理是否生效：
+访问 `https://zjcqoo.github.io#test=服务器IP.xip.io:8443` 
 
-```bash
-curl http://服务器IP:8080/http \
-  -H '--url: https://raw.githubusercontent.com/EtherDream/jsproxy/master/test/works.txt' \
-  -H 'Origin: http://localhost'
-```
-
-正常情况下，显示 `ok`。如果无法连接，检查 8080/8443 端口是否添加到防火墙。
-
-其他错误，可尝试查看错误日志：
-
-```bash
-cat /home/jsproxy/server/nginx/logs/error.log
-```
+使用自己的 github.io 或其他站点，可参考[站点部署](docs/deploy.md)。
 
 
 # 维护
@@ -66,52 +54,24 @@ tail server/nginx/logs/proxy.log
 目前暂未实现开机自启动。
 
 
-# 快捷部署
+# 禁止外链
 
-假如你的 github 用户名为 `mygithub`，域名为 `example.com`。
+默认情况下，代理接口允许所有 `github.io` 子站点调用，这可能导致不必要的流量消耗。
 
-## 服务端
-
-1.解析域名到自己服务器。申请证书，保存到 `cert/example.com/` 目录下
-
-2.修改 `nginx.conf` 中域名和证书的配置（默认被注释）
-
-3.在 `allowed-sites.conf` 中添加 Web 空间的地址：
-
-```
-https://mygithub.github.io     'my';
-```
-
-4.执行 `./run.sh reload` 重启服务
-
-
-## 客户端
-
-1.进入 https://github.com/zjcqoo/zjcqoo.github.io 点击 fork。
-
-2.进入 Settings 页面，仓库重命名成 `mygithub.github.io`
-
-3.进入 `conf.js` 文件，在线编译
-
-4.访问 `https://mygithub.github.io` 预览
-
-> 本项目支持子路径。仓库可重命名成任何名字（例如 x），然后创建 `gh-pages` 分支，通过 `https://用户名.github.io/x` 也能访问。
-
-
-浏览器端源码可查看：https://github.com/EtherDream/jsproxy-browser
+如果希望只给自己网站使用，可编辑 `allowed-sites.conf`。（重启服务生效）
 
 
 # 安全策略
 
-如果不希望代理访问内网，可执行 `setup-ipset.sh` 避免 SSRF 风险：
+如果不希望代理访问内网（避免 SSRF 风险），可执行 `setup-ipset.sh`：
 
 ```bash
-/home/jsproxy/setup-ipset.sh
+/home/jsproxy/server/setup-ipset.sh
 ```
 
 > 需要 root 权限，依赖 `ipset` 命令
 
-该脚本可禁止 `jsporxy` 用户访问内网（针对 TCP）。nginx 之外的程序也生效，但不影响其他用户。
+该脚本可禁止 `jsporxy` 用户访问保留 IP 段（针对 TCP）。nginx 之外的程序也生效，但不影响其他用户。
 
 
 # 项目特点
