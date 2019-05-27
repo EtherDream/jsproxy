@@ -1,11 +1,11 @@
-# 在线预览
+# 演示
 
 https://zjcqoo.github.io/-----https://www.google.com
 
 （目前仍在更新中，如有问题尝试用隐身模式访问）
 
 
-# 最近更新
+# 更新
 
 * 2019-05-26 安装时自动申请证书（使用 xip.io 域名），安装后即可预览
 
@@ -29,7 +29,7 @@ curl -O https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh && bash
 
 访问 `https://zjcqoo.github.io#test=服务器IP.xip.io:8443` 
 
-使用自己的 github.io 或其他站点，可参考[站点部署](docs/deploy.md)。
+部署到自己的 github.io 或其他站点，可参考[站点部署](docs/deploy.md)。
 
 
 # 维护

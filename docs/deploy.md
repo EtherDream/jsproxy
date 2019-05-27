@@ -17,8 +17,6 @@
 > 本项目支持子路径。仓库可重命名成任何名字（例如 x），然后创建 `gh-pages` 分支，通过 `https://my.github.io/x` 也能访问。
 
 
-## 使用任意站点
+## 使用任意域名
 
-访问浏览器端的项目：https://github.com/EtherDream/jsproxy-browser
-
-参考上述修改 `www` 目录中的 `conf.js`，然后发布 `www` 目录到网站即可。
+[自定义 github pages 域名](https://help.github.com/en/articles/using-a-custom-domain-with-github-pages)，或者将文件发布到其他 Web 服务器上。
