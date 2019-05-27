@@ -2,7 +2,7 @@
 
 BIN_URL=https://raw.githubusercontent.com/EtherDream/jsproxy-bin/master/
 
-JSPROXY_VER=dev
+JSPROXY_VER=master
 OPENRESTY_VER=1.15.8.1
 
 SUPPORTED_OS="Linux-x86_64"

@@ -15,7 +15,7 @@ https://zjcqoo.github.io/-----https://www.google.com
 # 安装
 
 ```bash
-curl -O https://raw.githubusercontent.com/EtherDream/jsproxy/dev/i.sh && bash i.sh
+curl -O https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh && bash i.sh
 ```
 
 * 自动安装目前只支持 Linux x64，并且需要 root 权限
