@@ -14,13 +14,6 @@ iptables -t nat -I PREROUTING 1 -p tcp --dport 80 -j REDIRECT --to-ports 10080
 yum install -y openssl
 ```
 
-推荐安装 `crontab`，可定期续签证书（CentOS 7 为例）
-
-```bash
-yum install cronie
-service crond start
-```
-
 安装 acme.sh（无需 root 权限，在 `jsproxy` 用户下安装）
 
 ```bash
