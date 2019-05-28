@@ -37,6 +37,9 @@ mkdir -p $dist
   --fullchain-file $dist/ecc.cer
 ```
 
+如果申请失败（例如提示 `rate limit exceeded`），尝试将 `xip.io` 换成 `nip.io`、`sslip.io` 等其他类似的域名。
+
+
 4.生成配置文件：
 
 ```conf
