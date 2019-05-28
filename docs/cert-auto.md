@@ -6,7 +6,22 @@
 iptables -t nat -I PREROUTING 1 -p tcp --dport 80 -j REDIRECT --to-ports 10080
 ```
 
-2.安装 acme.sh（无需 root 权限，在 `jsproxy` 用户下安装）
+2.安装 acme.sh
+
+该脚本依赖 `openssl`，否则无法生存证书（大部分系统默认已安装）
+
+```bash
+yum install -y openssl
+```
+
+推荐安装 `crontab`，可定期续签证书（CentOS 7 为例）
+
+```bash
+yum install cronie
+service crond start
+```
+
+安装 acme.sh（无需 root 权限，在 `jsproxy` 用户下安装）
 
 ```bash
 su - jsproxy
