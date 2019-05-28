@@ -28,11 +28,10 @@ logfile=$SVC_DIR/log-svc/backup/$logtime.log
 
 #
 # 先移走日志文件，然后创建新的日志文件，通知 nginx 重新打开
-# https://www.nginx.com/resources/wiki/start/topics/examples/logrotation/
 #
 mv $LOG_FILE $logfile
 touch $LOG_FILE
-kill -USR1 $(< $LOG_DIR/nginx.pid)
+$SVC_DIR/run.sh reopen
 sleep 1
 
 #
