@@ -7,6 +7,8 @@ https://zjcqoo.github.io/-----https://www.google.com
 
 # 更新
 
+* 2019-05-27 增加 nio.io、sslip.io 后备域名，减少申请失败的几率
+
 * 2019-05-26 安装时自动申请证书（使用 xip.io 域名），安装后即可预览
 
 [查看更多](changelogs)
