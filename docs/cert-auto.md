@@ -8,7 +8,7 @@ iptables -t nat -I PREROUTING 1 -p tcp --dport 80 -j REDIRECT --to-ports 10080
 
 2.安装 acme.sh
 
-该脚本依赖 `openssl`，否则无法生存证书（大部分系统默认已安装）
+该脚本依赖 `openssl`，否则无法生成证书（大部分系统默认已安装）
 
 ```bash
 yum install -y openssl
