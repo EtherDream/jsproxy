@@ -27,7 +27,7 @@ curl -O https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh && bash
 
 # 预览
 
-访问 `https://zjcqoo.github.io#test=服务器IP.xip.io:8443` 
+访问 `https://zjcqoo.github.io#test=服务器IP.xip.io:8443`（参考脚本输出）
 
 部署到自己的 github.io 或其他站点，可参考[站点部署](docs/deploy.md)。
 
