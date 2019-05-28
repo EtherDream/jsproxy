@@ -146,7 +146,7 @@ install() {
   fi
 
   if [ -d server ]; then
-    backup="$PWD/bak/$(date +%Y_%m_%d_%H_%M_%S)"
+    backup="$INSTALL_DIR/bak/$(date +%Y_%m_%d_%H_%M_%S)"
     warn "当前 server 目录备份到 $backup"
     mkdir -p $backup
     mv server $backup
