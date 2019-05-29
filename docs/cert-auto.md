@@ -6,27 +6,23 @@
 iptables -t nat -I PREROUTING 1 -p tcp --dport 80 -j REDIRECT --to-ports 10080
 ```
 
-2.安装 acme.sh
+> 外部访问 http://服务器IP/.well-known/acme-challenge/test.txt 可验证是否正常。返回 `ok` 说明正常。
 
-该脚本依赖 `openssl`，否则无法生成证书（大部分系统默认已安装）
-
-```bash
-yum install -y openssl
-```
-
-安装 acme.sh（无需 root 权限，在 `jsproxy` 用户下安装）
+2.安装 acme.sh（无需 root 权限，在 `jsproxy` 用户下安装）
 
 ```bash
 su - jsproxy
 curl https://raw.githubusercontent.com/Neilpang/acme.sh/master/acme.sh | INSTALLONLINE=1  sh
 ```
 
+> 部分精简系统可能没有 `openssl` 导致运行失败，需提前安装依赖（例如 `yum install -y openssl`）
+
 3.申请证书
 
 ```bash
 # 服务器公网 IP
 ip=$(curl -s https://api.ipify.org)
-domain="$ip.xip.io"
+domain=$ip.xip.io
 
 dist=~/server/cert/$domain
 mkdir -p $dist
@@ -47,7 +43,6 @@ mkdir -p $dist
 
 如果申请失败（例如提示 `rate limit exceeded`），尝试将 `xip.io` 换成 `nip.io`、`sslip.io` 等其他类似的域名。
 
-
 4.生成配置文件：
 
 ```conf
@@ -62,7 +57,7 @@ ssl_certificate_key   cert/$domain/ecc.key;
 
 5.验证
 
-访问 `https://服务器IP.xip.io:8443/`，没出现证书错误即成功（404 等错误不影响）。
+访问 `https://服务器IP.xip.io:8443/`，没出现证书错误即成功。
 
 6.关闭 80 端口转发
 
