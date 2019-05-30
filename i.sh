@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
 
-BIN_URL=https://raw.githubusercontent.com/EtherDream/jsproxy-bin/master/
+{ # this ensures the entire script is downloaded #
 
-JSPROXY_VER=master
+JSPROXY_VER=dev
 OPENRESTY_VER=1.15.8.1
+
+SRC_URL=https://raw.githubusercontent.com/EtherDream/jsproxy/$JSPROXY_VER
+BIN_URL=https://raw.githubusercontent.com/EtherDream/jsproxy-bin/master
+ZIP_URL=https://codeload.github.com/EtherDream/jsproxy/tar.gz
 
 SUPPORTED_OS="Linux-x86_64"
 OS="$(uname)-$(uname -m)"
@@ -107,7 +111,7 @@ ssl_certificate_key   cert/$domain/ecc.key;
       log "证书申请完成，重启服务 ..."
       server/run.sh reload
 
-      log "在线预览: https://zjcqoo.github.io/#test=$domain:8443"
+      log "在线预览: https://$domain:8443"
       break
     fi
 
@@ -136,9 +140,15 @@ install() {
   log "nginx path: $NGX_DIR"
 
   log "下载代理服务 ..."
-  curl -o jsproxy.tar.gz https://codeload.github.com/EtherDream/jsproxy/tar.gz/$JSPROXY_VER
+  curl -o jsproxy.tar.gz $ZIP_URL/$JSPROXY_VER
   tar zxf jsproxy.tar.gz
   rm -f jsproxy.tar.gz
+
+  log "下载静态资源 ..."
+  curl -o www.tar.gz $ZIP_URL/gh-pages
+  mkdir jsproxy-$JSPROXY_VER/www
+  tar zxf www.tar.gz -C jsproxy-$JSPROXY_VER/www --strip-components=1
+  rm -f www.tar.gz
 
   if [ -x server/run.sh ]; then
     warn "尝试停止当前服务 ..."
@@ -146,7 +156,7 @@ install() {
   fi
 
   if [ -d server ]; then
-    backup="$PWD/bak/$(date +%Y_%m_%d_%H_%M_%S)"
+    backup="$INSTALL_DIR/bak/$(date +%Y_%m_%d_%H_%M_%S)"
     warn "当前 server 目录备份到 $backup"
     mkdir -p $backup
     mv server $backup
@@ -190,15 +200,8 @@ main() {
     -j REDIRECT \
     --to-ports 10080
 
-  local src=$0
-  local dst=$INSTALL_DIR/i.sh
-  warn "当前脚本移动到 $dst"
-
-  mv -f $src $dst
-  chmod +x $dst
-
   log "切换到 jsproxy 用户，执行安装脚本 ..."
-  su - jsproxy -c "$dst install"
+  su - jsproxy -c "curl -s $SRC_URL/i.sh | bash -s install"
 
   local line=$(iptables -t nat -L --line-numbers | grep "acme challenge svc")
   iptables -t nat -D PREROUTING ${line%% *}
@@ -215,3 +218,5 @@ case $1 in
 *)
   main;;
 esac
+
+} # this ensures the entire script is downloaded #

@@ -1,11 +1,15 @@
 # 演示
 
-https://zjcqoo.github.io/-----https://www.google.com
+https://jsproxy.tk/-----https://www.google.com
 
 （目前仍在更新中，如有问题尝试用隐身模式访问）
 
 
 # 更新
+
+* 2019-05-29 nginx 增加静态资源服务，可同时支持代理接口和首页访问
+
+* 2019-05-27 增加 nio.io、sslip.io 后备域名，减少申请失败的几率
 
 * 2019-05-26 安装时自动申请证书（使用 xip.io 域名），安装后即可预览
 
@@ -15,7 +19,7 @@ https://zjcqoo.github.io/-----https://www.google.com
 # 安装
 
 ```bash
-curl -O https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh && bash i.sh
+curl https://raw.githubusercontent.com/EtherDream/jsproxy/dev/i.sh | bash
 ```
 
 * 自动安装目前只支持 Linux x64，并且需要 root 权限
@@ -24,12 +28,20 @@ curl -O https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh && bash
 
 无法满足上述条件，或想了解安装细节，可尝试[手动安装](docs/setup.md)。
 
+测试: `https://服务器IP.xip.io:8443`（具体参考脚本输出）
 
-# 预览
 
-访问 `https://zjcqoo.github.io#test=服务器IP.xip.io:8443`（参考脚本输出）
+## 部署
 
-部署到自己的 github.io 或其他站点，可参考[站点部署](docs/deploy.md)。
+Fork 本项目，进入 `gh-pages` 分支，编辑 `conf.js` 文件：
+
+* 节点列表（`node_map` 字段，包括节点 id 和节点主机）
+
+* 默认节点（`node_default` 字段，指定节点 id）
+
+访问 `https://用户名.github.io/jsproxy` 预览。
+
+GitHub 支持[自定义域名](https://help.github.com/en/articles/using-a-custom-domain-with-github-pages)。也可以将文件发布到自己的 Web 服务器上。
 
 
 # 维护
