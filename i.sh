@@ -2,12 +2,12 @@
 
 { # this ensures the entire script is downloaded #
 
-SRC_URL=https://raw.githubusercontent.com/EtherDream/jsproxy/master
+JSPROXY_VER=dev
+OPENRESTY_VER=1.15.8.1
+
+SRC_URL=https://raw.githubusercontent.com/EtherDream/jsproxy/$JSPROXY_VER
 BIN_URL=https://raw.githubusercontent.com/EtherDream/jsproxy-bin/master
 ZIP_URL=https://codeload.github.com/EtherDream/jsproxy/tar.gz
-
-JSPROXY_VER=master
-OPENRESTY_VER=1.15.8.1
 
 SUPPORTED_OS="Linux-x86_64"
 OS="$(uname)-$(uname -m)"
