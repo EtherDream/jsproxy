@@ -146,7 +146,6 @@ install() {
 
   log "下载静态资源 ..."
   curl -o www.tar.gz $ZIP_URL/gh-pages
-  mkdir jsproxy-$JSPROXY_VER/www
   tar zxf www.tar.gz -C jsproxy-$JSPROXY_VER/www --strip-components=1
   rm -f www.tar.gz
 
