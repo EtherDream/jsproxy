@@ -90,8 +90,8 @@ local function nodeSwitched()
   local addr = ngx.var.upstream_addr or ''
   local etag = ngx.header['etag'] or ''
   local last = ngx.header['last-modified'] or ''
-  -- TODO: , -> ,,
-  local info = addr .. ',' .. resLenStr .. ',' .. etag .. ',' .. last
+
+  local info = addr .. '|' .. resLenStr .. '|' .. etag .. '|' .. last
 
   -- clear all res headers
   local h, err = ngx.resp.get_headers()

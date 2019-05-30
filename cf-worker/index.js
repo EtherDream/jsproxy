@@ -4,14 +4,14 @@
  */
 'use strict'
 
-const JS_VER = 2
+const JS_VER = 3
 
 const PREFLIGHT_INIT = {
   status: 204,
   headers: new Headers({
     'access-control-allow-origin': '*',
     'access-control-allow-methods': 'GET,POST,PUT,PATCH,TRACE,DELETE,HEAD,OPTIONS',
-    'access-control-allow-headers': '--raw-info,--level,--url,--referer,--cookie,--origin,--ext,--aceh,--ver,--type,--mode,accept,accept-charset,accept-encoding,accept-language,accept-datetime,authorization,cache-control,content-length,content-type,date,if-match,if-modified-since,if-none-match,if-range,if-unmodified-since,max-forwards,pragma,range,te,upgrade,upgrade-insecure-requests,x-requested-with,chrome-proxy',
+    'access-control-allow-headers': '--raw-info,--level,--url,--referer,--cookie,--origin,--ext,--aceh,--ver,--type,--mode,accept,accept-charset,accept-encoding,accept-language,accept-datetime,authorization,cache-control,content-length,content-type,date,if-match,if-modified-since,if-none-match,if-range,if-unmodified-since,max-forwards,pragma,range,te,upgrade,upgrade-insecure-requests,x-requested-with,chrome-proxy,purpose',
     'access-control-max-age': '1728000',
   }),
 }
@@ -68,7 +68,7 @@ async function handler(req) {
       acehOld = true
       break
     case 'raw-info':
-      [rawSvr, rawLen, rawEtag] = v.split(/[,|]/)
+      [rawSvr, rawLen, rawEtag] = v.split('|')
       break
     case 'level':
     case 'mode':
@@ -86,14 +86,12 @@ async function handler(req) {
       break
     }
   }
-
   if (extHdrs) {
     for (const [k, v] of pairs(extHdrs)) {
       reqHdrNew.set(k, v)
     }
   }
-
-  return tryUrl(urlObj, req.method, reqHdrNew, acehOld, rawLen, 0)
+  return proxy(urlObj, req.method, reqHdrNew, acehOld, rawLen, 0)
 }
 
 
@@ -102,13 +100,10 @@ async function handler(req) {
  * @param {URL} urlObj 
  * @param {string} method 
  * @param {Headers} headers 
- * @param {number} retryNum 
+ * @param {number} retryTimes 
  */
-async function tryUrl(urlObj, method, headers, acehOld, rawLen, retryNum) {
-  // proxy
+async function proxy(urlObj, method, headers, acehOld, rawLen, retryTimes) {
   const res = await fetch(urlObj.href, {method, headers})
-
-  // header filter
   const resHdrOld = res.headers
   const resHdrNew = new Headers(resHdrOld)
 
@@ -161,10 +156,10 @@ async function tryUrl(urlObj, method, headers, acehOld, rawLen, retryNum) {
   let body = res.body
 
   if (badLen) {
-    if (retryNum < 1) {
+    if (retryTimes < 1) {
       urlObj = await parseYtVideoRedir(urlObj, newLen, res)
       if (urlObj) {
-        return tryUrl(urlObj, method, headers, acehOld, rawLen, retryNum + 1)
+        return proxy(urlObj, method, headers, acehOld, rawLen, retryTimes + 1)
       }
     }
     status = 400
@@ -172,7 +167,7 @@ async function tryUrl(urlObj, method, headers, acehOld, rawLen, retryNum) {
     resHdrNew.set('cache-control', 'no-cache')
   }
 
-  resHdrNew.set('--retry', retryNum)
+  resHdrNew.set('--retry', retryTimes)
   resHdrNew.set('--ver', JS_VER)
 
   return new Response(body, {
@@ -186,10 +181,10 @@ async function tryUrl(urlObj, method, headers, acehOld, rawLen, retryNum) {
  * @param {URL} urlObj 
  */
 function isYtUrl(urlObj) {
-  const m =
+  return (
     urlObj.host.endsWith('.googlevideo.com') &&
     urlObj.pathname.startsWith('/videoplayback')
-  return m
+  )
 }
 
 /**
