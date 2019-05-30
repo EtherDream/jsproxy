@@ -71,10 +71,16 @@ cd ~
 git clone --depth=1 https://github.com/EtherDream/jsproxy.git server
 ```
 
-开启代理服务：
+下载静态资源文件到 `www` 目录：
 
 ```bash
 cd server
+git clone -b gh-pages --depth=1 git@github.com:EtherDream/jsproxy.git www
+```
+
+开启服务：
+
+```bash
 ./run.sh
 ```
 
