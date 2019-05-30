@@ -2,7 +2,7 @@
 
 { # this ensures the entire script is downloaded #
 
-JSPROXY_VER=dev
+JSPROXY_VER=master
 OPENRESTY_VER=1.15.8.1
 
 SRC_URL=https://raw.githubusercontent.com/EtherDream/jsproxy/$JSPROXY_VER
