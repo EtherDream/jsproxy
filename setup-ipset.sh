@@ -1,4 +1,7 @@
-# 需要 root 运行
+#
+# 该脚本用于禁止 jsporxy 用户访问内网（针对 TCP）
+# 需要 root 权限运行，依赖 ipset 命令
+#
 ipset create ngx-ban-dstip hash:net
 
 # 该策略对 jsproxy 用户的所有程序都生效
