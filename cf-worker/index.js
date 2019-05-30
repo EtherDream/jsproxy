@@ -1,11 +1,10 @@
 /**
  * jsproxy cfworker api
- * 
- * @update: 2019-05-07
- * @author: EtherDream
- * @see: https://github.com/EtherDream/jsproxy/
+ * https://github.com/EtherDream/jsproxy/
  */
 'use strict'
+
+const JS_VER = 2
 
 const PREFLIGHT_INIT = {
   status: 204,
@@ -44,7 +43,7 @@ async function handler(req) {
     return new Response(null, PREFLIGHT_INIT)
   }
 
-  let url = ''
+  let urlObj = null
   let extHdrs = null
   let acehOld = false
   let rawSvr = ''
@@ -63,14 +62,13 @@ async function handler(req) {
     const k2 = k.substr(2)
     switch (k2) {
     case 'url':
-      url = v
+      urlObj = new URL(v)
       break
     case 'aceh':
       acehOld = true
       break
     case 'raw-info':
-      // TODO: ,,
-      [rawSvr, rawLen, rawEtag] = v.split(/,{1,2}/)
+      [rawSvr, rawLen, rawEtag] = v.split(/[,|]/)
       break
     case 'level':
     case 'mode':
@@ -95,11 +93,20 @@ async function handler(req) {
     }
   }
 
+  return tryUrl(urlObj, req.method, reqHdrNew, acehOld, rawLen, 0)
+}
+
+
+/**
+ * 
+ * @param {URL} urlObj 
+ * @param {string} method 
+ * @param {Headers} headers 
+ * @param {number} retryNum 
+ */
+async function tryUrl(urlObj, method, headers, acehOld, rawLen, retryNum) {
   // proxy
-  const res = await fetch(url, {
-    method: req.method,
-    headers: reqHdrNew,
-  })
+  const res = await fetch(urlObj.href, {method, headers})
 
   // header filter
   const resHdrOld = res.headers
@@ -148,29 +155,63 @@ async function handler(req) {
 
   // verify
   const newLen = resHdrOld.get('content-length') || ''
-  const newEtag = resHdrOld.get('etag') || ''
-
   const badLen = (rawLen !== newLen)
-  const badEtag = (rawEtag && rawEtag !== newEtag)
-
-  // resHdrNew.set('--l', rawLen + ',' + newLen)
-  // resHdrNew.set('--e', rawEtag + ',' + newEtag)
 
   let status = 200
   let body = res.body
 
   if (badLen) {
+    if (retryNum < 1) {
+      urlObj = await parseYtVideoRedir(urlObj, newLen, res)
+      if (urlObj) {
+        return tryUrl(urlObj, method, headers, acehOld, rawLen, retryNum + 1)
+      }
+    }
     status = 400
     body = `bad len (old: ${rawLen} new: ${newLen})`
     resHdrNew.set('cache-control', 'no-cache')
   }
-  // else if (badEtag) {
-  //   status = 400
-  //   body = `bad etag (old: ${rawEtag} new: ${newEtag})`
-  // }
+
+  resHdrNew.set('--retry', retryNum)
+  resHdrNew.set('--ver', JS_VER)
 
   return new Response(body, {
     status,
     headers: resHdrNew,
   })
+}
+
+
+/**
+ * @param {URL} urlObj 
+ */
+function isYtUrl(urlObj) {
+  const m =
+    urlObj.host.endsWith('.googlevideo.com') &&
+    urlObj.pathname.startsWith('/videoplayback')
+  return m
+}
+
+/**
+ * @param {URL} urlObj 
+ * @param {number} newLen 
+ * @param {Response} res 
+ */
+async function parseYtVideoRedir(urlObj, newLen, res) {
+  if (newLen > 2000) {
+    return null
+  }
+  if (!isYtUrl(urlObj)) {
+    return null
+  }
+  try {
+    const data = await res.text()
+    urlObj = new URL(data)
+  } catch (err) {
+    return null
+  }
+  if (!isYtUrl(urlObj)) {
+    return null
+  }
+  return urlObj
 }
