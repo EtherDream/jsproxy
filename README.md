@@ -7,6 +7,8 @@ https://jsproxy.tk/-----https://www.google.com
 
 # 更新
 
+* 2019-05-30 更新 cfworker，对 ytb 视频进行了优化（推荐选 1080p+，不会增加服务器压力）
+
 * 2019-05-29 nginx 增加静态资源服务，可同时支持代理接口和首页访问
 
 * 2019-05-27 增加 nio.io、sslip.io 后备域名，减少申请失败的几率
