@@ -5,17 +5,15 @@
 
 ## 方案 1 —- 通过 80 端口验证
 
-前提条件：需要 root 权限
+前提条件：公网 IP 能访问 80 端口，设备需要 root 权限
 
 1.输入 `服务器IP.xip.io`
 
-2.Manual Verification -> Manually Verify Domain
+2.`Manual Verification` -> `Manually Verify Domain` -> `Download File`
 
-3.Download File
+3.文件保存到服务器 `~/server/acme/.well-known/acme-challenge/` 目录
 
-4.文件保存到服务器 `~/server/acme/.well-known/acme-challenge/` 目录
-
-5.转发 80 端口到 10080 端口（需要 root 权限）
+4.转发 80 端口到 10080 端口（需要 root 权限）
 
 ```bash
 iptables -t nat -I PREROUTING 1 -p tcp --dport 80 -j REDIRECT --to-ports 10080
@@ -23,11 +21,11 @@ iptables -t nat -I PREROUTING 1 -p tcp --dport 80 -j REDIRECT --to-ports 10080
 
 当然也可以使用其他 Web 服务，只要该文件能被外部访问就可以。
 
-6.测试链接能否访问（Verify successful upload by visiting the following links in your browser）
+5.测试链接能否访问（Verify successful upload by visiting the following links in your browser）
 
-7.Download SSL Certificate
+6.Download SSL Certificate
 
-8.保存证书
+7.保存证书
 
 `Certificate` 保存到 `~/server/cert/xip.io/cert`
 
@@ -43,11 +41,11 @@ ssl_certificate_key   cert/xip.io/key;
 
 重启服务：`~/server/run.sh reload`
 
-9.验证
+8.验证
 
 访问 `https://服务器IP.xip.io:8443/`，没出现证书错误即成功（404 等错误不影响）。
 
-10.关闭 80 端口转发
+9.关闭 80 端口转发
 
 ```bash
 iptables -t nat -D PREROUTING 1
