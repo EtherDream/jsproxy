@@ -65,4 +65,4 @@ ssl_certificate_key   cert/$domain/ecc.key;
 iptables -t nat -D PREROUTING 1
 ```
 
-如果 80 端口运行没有其他服务，可以不关闭。因为 Let's Encrypt 证书有效期只有 3 个月，所以 acme.sh 会定期执行续签脚本。如果 80 端口关闭则无法自动续签。
+如果 80 端口没有运行其他服务，可以不关闭。因为 Let's Encrypt 证书有效期只有 3 个月，所以 acme.sh 会定期执行续签脚本。如果 80 端口关闭则无法自动续签。
