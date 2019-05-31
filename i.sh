@@ -108,10 +108,14 @@ ssl_certificate       cert/$domain/ecc.cer;
 ssl_certificate_key   cert/$domain/ecc.key;
 " > server/cert/cert.conf
 
+      local url=https://$domain:8443
+      echo "
+$url  'mysite';" >> server/allowed-sites.conf
+
       log "证书申请完成，重启服务 ..."
       server/run.sh reload
 
-      log "在线预览: https://$domain:8443"
+      log "在线预览: $url"
       break
     fi
 
