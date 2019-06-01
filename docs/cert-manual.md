@@ -43,7 +43,7 @@ ssl_certificate_key   cert/xip.io/key;
 
 8.验证
 
-访问 `https://服务器IP.xip.io:8443/`，没出现证书错误即成功（404 等错误不影响）。
+访问 `https://服务器IP.xip.io:8443/`，没出现证书错误即成功。
 
 9.关闭 80 端口转发
 
