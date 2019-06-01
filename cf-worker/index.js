@@ -4,7 +4,7 @@
  */
 'use strict'
 
-const JS_VER = 3
+const JS_VER = 4
 
 const PREFLIGHT_INIT = {
   status: 204,
@@ -16,13 +16,9 @@ const PREFLIGHT_INIT = {
   }),
 }
 
-const pairs = Object.entries
-
 
 addEventListener('fetch', e => {
   const ret = handler(e.request)
-    .catch(err => new Response(err))
-
   e.respondWith(ret)
 })
 
@@ -87,23 +83,26 @@ async function handler(req) {
     }
   }
   if (extHdrs) {
-    for (const [k, v] of pairs(extHdrs)) {
+    for (const [k, v] of Object.entries(extHdrs)) {
       reqHdrNew.set(k, v)
     }
   }
-  return proxy(urlObj, req.method, reqHdrNew, acehOld, rawLen, 0)
+  const reqInit = {
+    method: req.method,
+    headers: reqHdrNew,
+  }
+  return proxy(urlObj, reqInit, acehOld, rawLen, 0)
 }
 
 
 /**
  * 
  * @param {URL} urlObj 
- * @param {string} method 
- * @param {Headers} headers 
+ * @param {RequestInit} reqInit 
  * @param {number} retryTimes 
  */
-async function proxy(urlObj, method, headers, acehOld, rawLen, retryTimes) {
-  const res = await fetch(urlObj.href, {method, headers})
+async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
+  const res = await fetch(urlObj.href, reqInit)
   const resHdrOld = res.headers
   const resHdrNew = new Headers(resHdrOld)
 
@@ -159,7 +158,7 @@ async function proxy(urlObj, method, headers, acehOld, rawLen, retryTimes) {
     if (retryTimes < 1) {
       urlObj = await parseYtVideoRedir(urlObj, newLen, res)
       if (urlObj) {
-        return proxy(urlObj, method, headers, acehOld, rawLen, retryTimes + 1)
+        return proxy(urlObj, reqInit, acehOld, rawLen, retryTimes + 1)
       }
     }
     status = 400
