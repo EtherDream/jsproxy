@@ -33,7 +33,7 @@ curl https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh | bash
 测试: `https://服务器IP.xip.io:8443`（具体参考脚本输出）
 
 
-## 部署
+# 部署
 
 Fork 本项目，进入 `gh-pages` 分支，编辑 `conf.js` 文件：
 
