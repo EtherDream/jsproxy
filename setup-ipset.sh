@@ -1,6 +1,10 @@
-# run as root
+#
+# 该脚本用于禁止 jsporxy 用户访问内网（针对 TCP）
+# 需要 root 权限运行，依赖 ipset 命令
+#
 ipset create ngx-ban-dstip hash:net
 
+# 该策略对 jsproxy 用户的所有程序都生效
 iptables \
   -A OUTPUT \
   -p tcp --syn \
@@ -31,3 +35,6 @@ REV_NET=(
 for v in ${REV_NET[@]}; do
   ipset add ngx-ban-dstip $v
 done
+
+# 可屏蔽更多的网段：
+# ipset add ngx-ban-dstip xxx
