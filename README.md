@@ -41,7 +41,7 @@ Fork 本项目，进入 `gh-pages` 分支，编辑 `conf.js` 文件：
 
 * 默认节点（`node_default` 字段，指定节点 id）
 
-访问 `https://用户名.github.io/jsproxy` 预览。
+访问 `https://用户名.github.io/jsproxy/index.html` 预览。
 
 GitHub 支持[自定义域名](https://help.github.com/en/articles/using-a-custom-domain-with-github-pages)。也可以将文件发布到自己的 Web 服务器上。
 
