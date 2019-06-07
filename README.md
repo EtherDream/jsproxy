@@ -82,6 +82,11 @@ tail server/nginx/logs/proxy.log
 该脚本可禁止 `jsporxy` 用户访问保留 IP 段（针对 TCP）。nginx 之外的程序也生效，但不影响其他用户。
 
 
+# 相关文章
+
+* [基于 JS Hook 技术，打造最先进的在线代理》](https://github.com/EtherDream/jsproxy/blob/master/docs/blogs/js-hook.md)
+
+
 # 项目特点
 
 相比传统在线代理，本项目具有以下特点：
