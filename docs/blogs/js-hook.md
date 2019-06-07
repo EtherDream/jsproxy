@@ -184,7 +184,7 @@ Object.defineProperty(document, 'domain', {
 
 # 无法 Hook 的 API
 
-由于浏览器限制，有些 API 是无法重写的，其中最典型的就是 `location` —— 无论 `window.location` 还是 `document.location` 以及 `location` 对象中的成员，都是无法重写的。
+由于浏览器限制，有些 API 是无法重写的，其中最典型的就是 `location` —— 无论 `window.location` 还是 `document.location` 以及 `location` 对象中的成员，都是无法重写的。
 
 ```js
 Object.defineProperty(location, 'href', {
@@ -214,12 +214,12 @@ if (__location.host != 'b.com') {
 
 因为 `Service Worker` 掌控所有流量，所以修改 JS 资源并不困难。此外，网页中的内联脚本也可通过 `MutationObserver` 拦截和修改。
 
-> 演示站点就采用了这个方案。不过为了简单，目前使用正则替换，有时会出现一些误伤，将业务代码里的函数名、字符串、属性名也给破坏了。更好的方案，则是通过 AST 修改，当然性能开销也会更大。
+> 目前演示站点为了简单，直接使用正则替换，有时会将同名的函数、属性、字符串也进行修改，导致出现误伤。更好的方案，则是在语法树层面进行修改，当然性能开销也会更大。
 
 不过这个方案只能缓解，而无法彻底解决。因为我们只能修改明文出现的 `location`，对于动态的场合就无解了，例如：
 
 ```js
-window['lo' + 'cat' + 'ion']  // location object
+self['lo' + 'cat' + 'ion']    // location object
 this[atob('bG9jYXRpb24=')]    // location object
 ```
 
@@ -230,7 +230,7 @@ this[atob('bG9jYXRpb24=')]    // location object
 
 # 无法 Hook 的 DOM
 
-事实上，有些特殊请求无法被 `Service Worker` 拦截，例如 **不同源的框架页面**。因此，我们仍需借助 `MutationObserver` 修改元素的 URL 属性，将跨源的子页面变成同源，使得其中的请求都可被拦截。
+事实上，有些特殊请求无法被 `Service Worker` 拦截，例如 **不同源的框架页面**。因此，我们仍需借助 `MutationObserver` 修改元素的 URL 属性，将跨源的页面变成同源，从而可拦截子页面的所有请求。
 
 不过 `MutationObserver` 也有一些细节问题。例如，即使给元素设置了新的 URL，但是原始 URL 仍会加载。因为浏览器为了提高速度，有一个预加载的机制，原始 URL 在 HTML 解析阶段就开始加载了；之后修改会导致加载取消，但请求仍已产生，控制台里可看到 `cancel` 状态的请求。
 
@@ -241,22 +241,22 @@ this[atob('bG9jYXRpb24=')]    // location object
 
 # 无法 Hook 的资源
 
-众所周知 `URL` 是 `URI` 的子集，这意味着有些 URI 资源是 `Service Worker` 无法拦截的。最典型的就是 `Data URI`。
+由于 `URL` 只是 `URI` 的子集，因此有些 URI 资源无法被 `Service Worker` 拦截。最典型的就是 `Data URI`。
 
-此外，还有 `about:`、`blob:`、`javascript:` 等协议的 uri 也无法拦截。这意味着，通过这些 uri 加载的网页，其中的资源都不会被 `Service Worker` 捕获；通过这些 uri 加载的脚本，其中的 `location` 都不会被替换成 `__location`。这就有可能出现逃逸现象！
+此外，还有 `about:`、`blob:`、`javascript:` 等协议的资源加载也无法拦截。这意味着，通过这些 uri 产生的网页，其中的资源都不会被 `Service Worker` 捕获；通过这些 uri 产生的脚本，其中的 `location` 都不会被替换成 `__location`。这就会出现逃逸现象！
 
 因此，我们还得借助 API Hook 和 DOM Hook 来覆盖这类资源的加载。（目前演示中尚未实现）
 
-其他还有 `ws:`、`wss:` 虽然无法经过 `Service Worker`，但是 `WebSocket` 底层仍是基于 HTTP 的，因此通过 API Hook 即可解决。
+其他例如 `WebSocket` 协议 `ws:` 和 `wss:`，虽然也不会经过 `Service Worker`，但其本质仍是 HTTP，因此通过 API Hook 即可解决。
 
 
 # 更多优化
 
 得益于 `Service Worker` 超高的灵活性，我们甚至可对网络架构进行改造，将前后端进行分离：
 
-前端只提供静态资源，负责首页展示、`Service Worker` 的安装以及自身脚本。
+* 前端只提供静态资源，负责首页展示、`Service Worker` 的安装以及自身脚本
 
-后端只提供代理接口，负责数据转发。
+* 后端只提供代理接口，负责数据转发
 
 这样，前端可部署在第三方 Web 服务器上，例如演示站点部署于 GitHub Pages 服务。并且，一个前端可同时使用多个后端服务，从而可实现多倍的带宽加速！
 
