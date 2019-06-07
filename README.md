@@ -84,7 +84,7 @@ tail server/nginx/logs/proxy.log
 
 # 相关文章
 
-* [基于 JS Hook 技术，打造最先进的在线代理》](https://github.com/EtherDream/jsproxy/blob/master/docs/blogs/js-hook.md)
+* [基于 JS Hook 技术，打造最先进的在线代理](https://github.com/EtherDream/jsproxy/blob/master/docs/blogs/js-hook.md)
 
 
 # 项目特点
