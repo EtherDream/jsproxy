@@ -61,7 +61,7 @@ gen_cert() {
       continue
     fi
 
-    if [[ ! $(grep -E '\d+\.\d+\.\d+\.\d+' <<< $ip) ]]; then
+    if [[ ! $(grep -E "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" <<< $ip) ]]; then
       warn "无效 IP：$ip"
       continue
     fi
