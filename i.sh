@@ -61,7 +61,7 @@ gen_cert() {
       continue
     fi
 
-    if [[ $(ipcalc -c $ip 2>&1) ]]; then
+    if [[ ! $(grep -E '\d+\.\d+\.\d+\.\d+' <<< $ip) ]]; then
       warn "无效 IP：$ip"
       continue
     fi
