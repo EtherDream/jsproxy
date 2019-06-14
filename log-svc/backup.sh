@@ -5,7 +5,7 @@ SVC_DIR=/home/jsproxy/server
 LOG_DIR=$SVC_DIR/nginx/logs
 
 LOG_FILE=$LOG_DIR/proxy.log
-LOG_SIZE=$(( 32 * 1024 * 1024 ))
+LOG_SIZE=$(( 128 * 1024 * 1024 ))
 
 ERR_FILE=$LOG_DIR/error.log
 ERR_SIZE=$(( 1 * 1024 * 1024 * 1024 ))

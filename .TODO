@@ -1,0 +1,60 @@
+# 需解决的问题
+
+----
+
+THIS WEEKEND:
+
+* 节点切换后缓存无法命中
+
+* 资源加载失败后尝试其他线路
+
+* 文件下载取消，SW 仍在传输
+
+* cookie 过期后从内存中删除
+
+* 需要记录每个 CDN 静态资源的版本号
+
+* cookie 持久化，容量限制
+
+* localStorage 数据存储在内存中，同步到 indexDB，容量限制
+
+----
+
+* 支持 blob:, about:, data:, javascript: 等 uri 资源
+
+* DOM 属性不用 MutateObserver 替换，在 SW 中对 HTML 数据进行替换。改进 DOM hook
+
+* JS 处理不用正则，在 AST 层面实现（hook location, postMessage, self, parent, top）
+
+
+# 需添加的特征
+
+* 域名/url/网页内容 黑名单、白名单策略
+
+* HTML/JS 替换模块（支持流模式，webassembly 实现）
+
+* 测试案例完善
+
+* 支持 hsts。同时将 tld 列表独立存储，减少脚本体积
+
+* cosr 资源扫描器
+
+* 对 CDN 资源的 HTML/JS 离线处理
+
+* 支持同源策略模拟
+
+* Permission API hook
+
+* 程序托盘界面
+
+* 首页界面改进，增加设置等功能
+
+* 请求优先级 qos
+
+* 支持原始网页的 service worker
+
+* 根据流量费用限制带宽
+
+* 登陆认证功能
+
+* 反向模板引擎
