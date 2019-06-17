@@ -4,9 +4,9 @@
 HOST=etherdream.com
 NODE=(
   aliyun-hk-0
-  aliyun-hk-1
-  aliyun-hk-3
-  aliyun-sg
+  # aliyun-hk-1
+  # aliyun-hk-3
+  # aliyun-sg
 )
 for v in ${NODE[@]}; do
   echo "$v upload ..."
