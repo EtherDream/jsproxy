@@ -1,6 +1,6 @@
 jsproxy_config({
   // 当前配置的版本（服务端记录在日志中，方便排查问题）
-  ver: '51',
+  ver: '52',
 
   // 节点配置
   node_map: {
@@ -9,7 +9,8 @@ jsproxy_config({
       lines: [
         // 多条线路，负载均衡系统会从其中选一条
         'node-aliyun-hk-0.etherdream.com:8443',
-        'node-aliyun-hk-1.etherdream.com:8443'
+        'node-aliyun-hk-1.etherdream.com:8443',
+        'node-aliyun-hk-2.etherdream.com:8443',
       ]
     },
     'aliyun-sg': {
