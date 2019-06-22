@@ -1,10 +1,13 @@
-/**
- * jsproxy cfworker api
- * https://github.com/EtherDream/jsproxy/
- */
 'use strict'
 
-const JS_VER = 4
+/**
+ * static files (404.html, sw.js, conf.js)
+ */
+const ASSET_URL = 'https://zjcqoo.github.io'
+
+const JS_VER = 5
+const MAX_RETRY = 1
+
 
 const PREFLIGHT_INIT = {
   status: 204,
@@ -16,9 +19,30 @@ const PREFLIGHT_INIT = {
   }),
 }
 
+/**
+ * @param {string} message
+ */
+function makeErrRes(message) {
+  return new Response(message, {
+    status: 400,
+    headers: {
+      'cache-control': 'no-cache'
+    }
+  })
+}
+
 
 addEventListener('fetch', e => {
-  const ret = handler(e.request)
+  const req = e.request
+  const urlStr = req.url
+  const urlObj = new URL(urlStr)
+  let ret
+  if (urlObj.pathname !== '/http') {
+    // static files
+    ret = fetch(ASSET_URL + urlObj.pathname)
+  } else {
+    ret = handler(req)
+  }
   e.respondWith(ret)
 })
 
@@ -87,6 +111,9 @@ async function handler(req) {
       reqHdrNew.set(k, v)
     }
   }
+  if (!urlObj) {
+    return makeErrRes('missing url param')
+  }
   const reqInit = {
     method: req.method,
     headers: reqHdrNew,
@@ -148,29 +175,29 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
   resHdrNew.set('--s', res.status)
 
   // verify
-  const newLen = resHdrOld.get('content-length') || ''
-  const badLen = (rawLen !== newLen)
+  if (rawLen) {
+    const newLen = resHdrOld.get('content-length') || ''
+    const badLen = (rawLen !== newLen)
 
-  let status = 200
-  let body = res.body
-
-  if (badLen) {
-    if (retryTimes < 1) {
-      urlObj = await parseYtVideoRedir(urlObj, newLen, res)
-      if (urlObj) {
-        return proxy(urlObj, reqInit, acehOld, rawLen, retryTimes + 1)
+    if (badLen) {
+      if (retryTimes < MAX_RETRY) {
+        urlObj = await parseYtVideoRedir(urlObj, newLen, res)
+        if (urlObj) {
+          return proxy(urlObj, reqInit, acehOld, rawLen, retryTimes + 1)
+        }
       }
+      return makeErrRes(`bad len (old: ${rawLen} new: ${newLen})`)
     }
-    status = 400
-    body = `bad len (old: ${rawLen} new: ${newLen})`
-    resHdrNew.set('cache-control', 'no-cache')
+
+    if (retryTimes > 1) {
+      resHdrNew.set('--retry', retryTimes)
+    }
   }
 
-  resHdrNew.set('--retry', retryTimes)
   resHdrNew.set('--ver', JS_VER)
 
-  return new Response(body, {
-    status,
+  return new Response(res.body, {
+    status: 200,
     headers: resHdrNew,
   })
 }
