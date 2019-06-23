@@ -12,7 +12,7 @@
 
 注册，登陆，`Start building`，取一个子域名，`Create a Worker`。
 
-复制 [index.js](index.js) 到左侧代码框，`Save and deploy`。如果正常，右侧应显示首页。
+复制 [index.js](https://raw.githubusercontent.com/EtherDream/jsproxy/master/cf-worker/index.js) 到左侧代码框，`Save and deploy`。如果正常，右侧应显示首页。
 
 线路切换到 `当前站点` 即可使用。（选择演示服务的节点会报错，因为该域名不在我的外链白名单里）
 
@@ -30,7 +30,7 @@
 
 # 修改配置
 
-默认情况下，静态资源从 `https://zjcqoo.github.io` 反向代理，可通过代码中 `ASSET_URL` 配置。
+默认情况下，静态资源从 `https://zjcqoo.github.io` 反向代理，可通过代码中 `ASSET_URL` 配置。
 
 推荐将 `conf.js` 文件的 `node_default` 改为 `mysite`，这样能自动选择 `当前站点` 这个节点，不用每次手动选节点。
 
@@ -43,7 +43,7 @@
 
 后端修改：`lua/http-enc-res-hdr.lua` 的 [114-116 行](https://github.com/EtherDream/jsproxy/blob/master/lua/http-enc-res-hdr.lua#L114-L116) 注释打开，重启服务生效。
 
-可在 [84行](https://github.com/EtherDream/jsproxy/blob/master/lua/http-enc-res-hdr.lua#L84)处修改大于多少字节的静态资源走加速。
+可在 [84行](https://github.com/EtherDream/jsproxy/blob/master/lua/http-enc-res-hdr.lua#L84) 处修改大于多少字节的静态资源走加速。
 
 该功能目前还在实验中，有问题或者更好的思路可交流。
 
