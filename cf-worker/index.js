@@ -5,7 +5,7 @@
  */
 const ASSET_URL = 'https://zjcqoo.github.io'
 
-const JS_VER = 5
+const JS_VER = 6
 const MAX_RETRY = 1
 
 
@@ -21,10 +21,11 @@ const PREFLIGHT_INIT = {
 
 /**
  * @param {string} message
+ * @param {number} status
  */
-function makeErrRes(message) {
+function makeRes(message, status) {
   return new Response(message, {
-    status: 400,
+    status,
     headers: {
       'cache-control': 'no-cache'
     }
@@ -37,11 +38,19 @@ addEventListener('fetch', e => {
   const urlStr = req.url
   const urlObj = new URL(urlStr)
   let ret
-  if (urlObj.pathname !== '/http') {
+
+
+  switch (urlObj.pathname) {
+  case '/http':
+    ret = handler(req)
+    break
+  case '/works':
+    ret = makeRes('it works', 200)
+    break
+  default:
     // static files
     ret = fetch(ASSET_URL + urlObj.pathname)
-  } else {
-    ret = handler(req)
+    break
   }
   e.respondWith(ret)
 })
@@ -112,7 +121,7 @@ async function handler(req) {
     }
   }
   if (!urlObj) {
-    return makeErrRes('missing url param')
+    return makeRes('missing url param', 403)
   }
   const reqInit = {
     method: req.method,
@@ -186,7 +195,7 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
           return proxy(urlObj, reqInit, acehOld, rawLen, retryTimes + 1)
         }
       }
-      return makeErrRes(`bad len (old: ${rawLen} new: ${newLen})`)
+      return makeRes(`bad len (old: ${rawLen} new: ${newLen})`, 400)
     }
 
     if (retryTimes > 1) {

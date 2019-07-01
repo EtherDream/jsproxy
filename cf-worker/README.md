@@ -14,8 +14,6 @@
 
 复制 [index.js](https://raw.githubusercontent.com/EtherDream/jsproxy/master/cf-worker/index.js) 到左侧代码框，`Save and deploy`。如果正常，右侧应显示首页。
 
-线路切换到 `当前站点` 即可使用。（选择演示服务的节点会报错，因为该域名不在我的外链白名单里）
-
 收藏地址框中的 `https://xxxx.子域名.workers.dev`，以后可直接访问。
 
 
@@ -30,16 +28,14 @@
 
 # 修改配置
 
-默认情况下，静态资源从 `https://zjcqoo.github.io` 反向代理，可通过代码中 `ASSET_URL` 配置。
-
-推荐将 `conf.js` 文件的 `node_default` 改为 `mysite`，这样能自动选择 `当前站点` 这个节点，不用每次手动选节点。
+默认情况下，静态资源从 `https://zjcqoo.github.io` 反向代理，可通过代码中 `ASSET_URL` 配置，从而可使用自定义的 `conf.js` 配置。
 
 
 # 加速功能
 
 如果你已有服务器，也可通过 CloudFlare Worker 分担大文件的代理。
 
-前端修改：`conf.js` 的 `cfworker` 节点 `lines` 中加入当前域名。
+前端修改：`conf.js` 的 `cfworker` 节点 `lines` 配置。
 
 后端修改：`lua/http-enc-res-hdr.lua` 的 [114-116 行](https://github.com/EtherDream/jsproxy/blob/master/lua/http-enc-res-hdr.lua#L114-L116) 注释打开，重启服务生效。
 

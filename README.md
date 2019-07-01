@@ -28,7 +28,7 @@ curl https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh | bash
 
 无法满足上述条件，或想了解安装细节，可尝试[手动安装](docs/setup.md)。
 
-测试: `https://服务器IP.xip.io:8443`（具体参考脚本输出），线路选择 `当前站点`。
+测试: `https://服务器IP.xip.io:8443`（具体参考脚本输出）
 
 
 # 部署
