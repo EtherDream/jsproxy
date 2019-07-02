@@ -7,6 +7,7 @@ NODE=(
   # aliyun-hk-1
   aliyun-hk-2
   aliyun-hk-3
+  aliyun-hk-4
   aliyun-sg
 )
 for v in ${NODE[@]}; do
