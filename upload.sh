@@ -12,15 +12,19 @@ NODE=(
 )
 for v in ${NODE[@]}; do
   echo "$v upload ..."
-
   rsync . jsproxy@$v.$HOST:server \
     -a \
     --exclude='nginx/cache/*' \
     --exclude='nginx/logs/*'
 
-  echo "$v restart ..."
+  # echo "$v reload nginx ..."
+  # ssh jsproxy@$v.$HOST "./server/run.sh reload"
 
-  ssh jsproxy@$v.$HOST "./server/run.sh reload"
+  # echo "$v kill log-svc.sh"
+  # ssh jsproxy@$v.$HOST "kill $(ps aux | grep svc.sh | head -n1 | cut -d' ' -f 4)"
+
+  # echo "$v run log-svc.sh"
+  ssh jsproxy@$v.$HOST "./server/log-svc/svc.sh &"
 done
 
 echo "done"
