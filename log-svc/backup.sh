@@ -5,10 +5,10 @@ SVC_DIR=/home/jsproxy/server
 LOG_DIR=$SVC_DIR/nginx/logs
 
 LOG_FILE=$LOG_DIR/proxy.log
-LOG_SIZE=$(( 1024 * 1024 * 1024 ))
+LOG_SIZE=$(( 256 * 1024 * 1024 ))
 
 ERR_FILE=$LOG_DIR/error.log
-ERR_SIZE=$(( 1 * 1024 * 1024 * 1024 ))
+ERR_SIZE=$(( 256 * 1024 * 1024 ))
 
 
 # error.log 达到 ERR_SIZE，开始备份（目前只清理）
@@ -41,6 +41,6 @@ sleep 1
 echo "compress $logtime ($logsize bytes)"
 
 nice -n 19 \
-  xz -9 *.log
+  xz -9 backup/*.log
 
 echo "done"

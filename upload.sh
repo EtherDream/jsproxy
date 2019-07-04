@@ -11,20 +11,27 @@ NODE=(
   aliyun-sg
 )
 for v in ${NODE[@]}; do
-  echo "$v upload ..."
-  rsync . jsproxy@$v.$HOST:server \
-    -a \
-    --exclude='nginx/cache/*' \
-    --exclude='nginx/logs/*'
+  # echo "$v upload ..."
+  # rsync . jsproxy@$v.$HOST:server \
+  #   -a \
+  #   --exclude='nginx/cache/*' \
+  #   --exclude='nginx/logs/*'
+
 
   # echo "$v reload nginx ..."
   # ssh jsproxy@$v.$HOST "./server/run.sh reload"
 
-  # echo "$v kill log-svc.sh"
-  # ssh jsproxy@$v.$HOST "kill $(ps aux | grep svc.sh | head -n1 | cut -d' ' -f 4)"
+
+  echo "$v kill log-svc.sh"
+  ssh jsproxy@$v.$HOST "kill $(ps aux | grep svc.sh | head -n1 | awk '{print $2}')"
+
 
   # echo "$v run log-svc.sh"
-  ssh jsproxy@$v.$HOST "./server/log-svc/svc.sh &"
+  # ssh jsproxy@$v.$HOST "./server/log-svc/svc.sh &"
+
+
+  # echo "$v update www"
+  # ssh jsproxy@$v.$HOST "cd server/www && git pull"
 done
 
 echo "done"
