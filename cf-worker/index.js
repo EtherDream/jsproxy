@@ -5,7 +5,7 @@
  */
 const ASSET_URL = 'https://zjcqoo.github.io'
 
-const JS_VER = 6
+const JS_VER = 7
 const MAX_RETRY = 1
 
 
@@ -178,11 +178,6 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
     resHdrNew.set('--t', '1')
   }
 
-  resHdrNew.set('access-control-expose-headers', expose)
-  resHdrNew.set('access-control-allow-origin', '*')
-  resHdrNew.set('vary', vary)
-  resHdrNew.set('--s', res.status)
-
   // verify
   if (rawLen) {
     const newLen = resHdrOld.get('content-length') || ''
@@ -203,10 +198,28 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
     }
   }
 
+  let status = res.status
+
+  resHdrNew.set('access-control-expose-headers', expose)
+  resHdrNew.set('access-control-allow-origin', '*')
+  resHdrNew.set('vary', vary)
+  resHdrNew.set('--s', status)
   resHdrNew.set('--ver', JS_VER)
 
+  resHdrNew.delete('content-security-policy')
+  resHdrNew.delete('content-security-policy-report-only')
+
+  if (status === 301 ||
+      status === 302 ||
+      status === 303 ||
+      status === 307 ||
+      status === 308
+  ) {
+    status = status + 10
+  }
+
   return new Response(res.body, {
-    status: 200,
+    status,
     headers: resHdrNew,
   })
 }
