@@ -22,13 +22,11 @@ for v in ${NODE[@]}; do
   # ssh jsproxy@$v.$HOST "./server/run.sh reload"
 
 
-  echo "$v kill log-svc.sh"
-  ssh jsproxy@$v.$HOST "kill $(ps aux | grep svc.sh | head -n1 | awk '{print $2}')"
-
-
-  # echo "$v run log-svc.sh"
-  # ssh jsproxy@$v.$HOST "./server/log-svc/svc.sh &"
-
+  echo "$v reload svc.sh"
+  ssh jsproxy@$v.$HOST << EOF
+pkill -f svc.sh
+./server/log-svc/svc.sh &
+EOF
 
   # echo "$v update www"
   # ssh jsproxy@$v.$HOST "cd server/www && git pull"
