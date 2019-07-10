@@ -1,10 +1,13 @@
-/**
- * jsproxy cfworker api
- * https://github.com/EtherDream/jsproxy/
- */
 'use strict'
 
-const JS_VER = 4
+/**
+ * static files (404.html, sw.js, conf.js)
+ */
+const ASSET_URL = 'https://zjcqoo.github.io'
+
+const JS_VER = 8
+const MAX_RETRY = 1
+
 
 const PREFLIGHT_INIT = {
   status: 204,
@@ -16,9 +19,36 @@ const PREFLIGHT_INIT = {
   }),
 }
 
+/**
+ * @param {string} message
+ * @param {number} status
+ * @param {any} headers
+ */
+function makeRes(message, status = 200, headers = {}) {
+  headers['cache-control'] = 'no-cache'
+  return new Response(message, {status, headers})
+}
+
 
 addEventListener('fetch', e => {
-  const ret = handler(e.request)
+  const req = e.request
+  const urlStr = req.url
+  const urlObj = new URL(urlStr)
+  let ret
+
+
+  switch (urlObj.pathname) {
+  case '/http':
+    ret = handler(req)
+    break
+  case '/works':
+    ret = makeRes('it works')
+    break
+  default:
+    // static files
+    ret = fetch(ASSET_URL + urlObj.pathname)
+    break
+  }
   e.respondWith(ret)
 })
 
@@ -87,6 +117,9 @@ async function handler(req) {
       reqHdrNew.set(k, v)
     }
   }
+  if (!urlObj) {
+    return makeRes('missing url param', 403)
+  }
   const reqInit = {
     method: req.method,
     headers: reqHdrNew,
@@ -142,34 +175,49 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
     resHdrNew.set('--t', '1')
   }
 
+  // verify
+  if (rawLen) {
+    const newLen = resHdrOld.get('content-length') || ''
+    const badLen = (rawLen !== newLen)
+
+    if (badLen) {
+      if (retryTimes < MAX_RETRY) {
+        urlObj = await parseYtVideoRedir(urlObj, newLen, res)
+        if (urlObj) {
+          return proxy(urlObj, reqInit, acehOld, rawLen, retryTimes + 1)
+        }
+      }
+      return makeRes(`error`, 400, {
+        '--error': 'bad len:' + newLen
+      })
+    }
+
+    if (retryTimes > 1) {
+      resHdrNew.set('--retry', retryTimes)
+    }
+  }
+
+  let status = res.status
+
   resHdrNew.set('access-control-expose-headers', expose)
   resHdrNew.set('access-control-allow-origin', '*')
   resHdrNew.set('vary', vary)
-  resHdrNew.set('--s', res.status)
-
-  // verify
-  const newLen = resHdrOld.get('content-length') || ''
-  const badLen = (rawLen !== newLen)
-
-  let status = 200
-  let body = res.body
-
-  if (badLen) {
-    if (retryTimes < 1) {
-      urlObj = await parseYtVideoRedir(urlObj, newLen, res)
-      if (urlObj) {
-        return proxy(urlObj, reqInit, acehOld, rawLen, retryTimes + 1)
-      }
-    }
-    status = 400
-    body = `bad len (old: ${rawLen} new: ${newLen})`
-    resHdrNew.set('cache-control', 'no-cache')
-  }
-
-  resHdrNew.set('--retry', retryTimes)
+  resHdrNew.set('--s', status)
   resHdrNew.set('--ver', JS_VER)
 
-  return new Response(body, {
+  resHdrNew.delete('content-security-policy')
+  resHdrNew.delete('content-security-policy-report-only')
+
+  if (status === 301 ||
+      status === 302 ||
+      status === 303 ||
+      status === 307 ||
+      status === 308
+  ) {
+    status = status + 10
+  }
+
+  return new Response(res.body, {
     status,
     headers: resHdrNew,
   })
