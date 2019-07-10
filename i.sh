@@ -61,7 +61,7 @@ gen_cert() {
       continue
     fi
 
-    if [[ ! $(grep -E "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+" <<< $ip) ]]; then
+    if ! grep -qP "^\d+\.\d+\.\d+\.\d+$" <<< $ip; then
       warn "无效 IP：$ip"
       continue
     fi
@@ -81,8 +81,28 @@ gen_cert() {
 
   local acme=~/.acme.sh/acme.sh
 
-  for i in ${DOMAIN_SUFFIX[@]}; do
-    local domain=$ip.$i
+  local domains=()
+
+  if [[ $@ ]]; then
+    for i in $@; do
+      domains+=($i)
+    done
+  else
+    warn "未指定域名，使用公共测试域名"
+    for i in ${DOMAIN_SUFFIX[@]}; do
+      domains+=($ip.$i)
+    done
+  fi
+
+  for domain in ${domains[@]}; do
+    echo "校验域名 $domain ..."
+
+    local ret=$(getent ahosts $domain | head -n1 | awk '{print $1}')
+    if [[ $ret != $ip ]]; then
+      err "域名 $domain 解析结果: $ret，非本机公网 IP: $ip"
+      continue
+    fi
+
     log "尝试为域名 $domain 申请证书 ..."
 
     local dist=server/cert/$domain
@@ -119,7 +139,7 @@ $url  'mysite';" >> server/allowed-sites.conf
       break
     fi
 
-    err "证书申请失败！"
+    err "证书申请失败！（80 端口是否添加到防火墙）"
     rm -rf $dist
   done
 }
@@ -171,7 +191,9 @@ install() {
   server/run.sh
 
   log "服务已开启"
-  gen_cert
+  
+  shift 1
+  gen_cert $@
 }
 
 main() {
@@ -187,39 +209,48 @@ main() {
     exit 1
   fi
 
+  local cmd
+  if [[ $0 == *"i.sh" ]]; then
+    warn "本地调试模式"
+
+    local dst=/home/jsproxy/i.sh
+    cp $0 $dst
+    chown jsproxy:nobody $dst
+    if [[ $1 == "-s" ]]; then
+      shift 1
+    fi
+    cmd="bash $dst install $@"
+  else
+    cmd="curl -s $SRC_URL/i.sh | bash -s install $@"
+  fi
+
+  iptables \
+    -t nat \
+    -I PREROUTING 1 \
+    -p tcp --dport 80 \
+    -j REDIRECT \
+    --to-ports 8080
+
   if ! id -u jsproxy > /dev/null 2>&1 ; then
     log "创建用户 jsproxy ..."
     groupadd nobody > /dev/null 2>&1
     useradd jsproxy -g nobody --create-home
   fi
 
-  warn "HTTPS 证书申请需要验证 80 端口，确保 TCP:80 已添加到防火墙"
-  warn "如果当前已有 80 端口的服务，将暂时无法收到数据"
-  iptables \
-    -m comment --comment "acme challenge svc" \
-    -t nat \
-    -I PREROUTING 1 \
-    -p tcp --dport 80 \
-    -j REDIRECT \
-    --to-ports 10080
-
   log "切换到 jsproxy 用户，执行安装脚本 ..."
-  su - jsproxy -c "curl -s $SRC_URL/i.sh | bash -s install"
+  su - jsproxy -c "$cmd"
 
-  local line=$(iptables -t nat -L --line-numbers | grep "acme challenge svc")
+  local line=$(iptables -t nat -nL --line-numbers | grep "tcp dpt:80 redir ports 8080")
   iptables -t nat -D PREROUTING ${line%% *}
 
   log "安装完成。后续维护参考 https://github.com/EtherDream/jsproxy"
 }
 
 
-case $1 in
-"install")
-  install;;
-"cert")
-  gen_cert;;
-*)
-  main;;
-esac
+if [[ $1 == "install" ]]; then
+  install $@
+else
+  main $@
+fi
 
 } # this ensures the entire script is downloaded #
