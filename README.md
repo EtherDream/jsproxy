@@ -60,15 +60,13 @@ iptables -A PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-ports 8080
 
 例如演示站点的前端部署于 GitHub Pages 服务，从而可使用个性域名（*.github.io），还能减少一定的流量开销。
 
-Fork 本项目，进入 `gh-pages` 分支（该分支内容和 `www` 目录相同），编辑 `conf.js` 文件：
+Fork 本项目，进入 `gh-pages` 分支（该分支内容和 `www` 目录相同），编辑 `conf.js` 文件：
 
 * 节点列表（`node_map` 字段，包括节点 id 和节点主机）
 
 * 默认节点（`node_default` 字段，指定节点 id）
 
 访问 `https://用户名.github.io/jsproxy` 预览。
-
-GitHub 支持[自定义域名](https://help.github.com/en/articles/using-a-custom-domain-with-github-pages)
 
 
 # 维护
