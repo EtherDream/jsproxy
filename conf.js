@@ -20,7 +20,7 @@ jsproxy_config({
       }
     },
     'demo-sg': {
-      label: '演示服务-新加坡节点',
+      label: '演示服务-111111',
       lines: {
         'node-aliyun-sg.etherdream.com:8443': 1,
       },
