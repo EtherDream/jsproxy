@@ -1,9 +1,9 @@
 # 自动申请 HTTPS 证书
 
-1.转发 80 端口到 10080 端口（需要 root 权限）
+1.转发 80 端口到 8080 端口（需要 root 权限）
 
 ```bash
-iptables -t nat -I PREROUTING 1 -p tcp --dport 80 -j REDIRECT --to-ports 10080
+iptables -t nat -I PREROUTING 1 -p tcp --dport 80 -j REDIRECT --to-ports 8080
 ```
 
 > 外部访问 http://服务器IP/.well-known/acme-challenge/test.txt 可验证是否正常。返回 `ok` 说明正常。

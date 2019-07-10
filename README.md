@@ -31,17 +31,42 @@ curl https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh | bash
 测试: `https://服务器IP.xip.io:8443`（具体参考脚本输出）
 
 
-# 部署
+### 自定义域名
 
-Fork 本项目，进入 `gh-pages` 分支，编辑 `conf.js` 文件：
+将域名 `example.com` 解析到服务器 IP，然后执行：
+
+```bash
+curl https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh | bash -s example.com
+```
+
+访问: `https://example.com:8443`
+
+
+### 自定义端口
+
+默认端口为 8443 (HTTPS) 和 8080 (HTTP) ，如需改成 443 和 80，推荐使用端口转发：
+
+```bash
+iptables -A PREROUTING -t nat -p tcp --dport 443 -j REDIRECT --to-ports 8443
+iptables -A PREROUTING -t nat -p tcp --dport 80 -j REDIRECT --to-ports 8080
+```
+
+同时修改 `www.conf` 中的 `:8443` 为 `:443`。
+
+
+### 使用 GitHub Pages 前端
+
+本项目支持前后端分离，前端部分（`www` 目录下的文件）可部署在第三方 Web 服务器上。
+
+例如演示站点的前端部署于 GitHub Pages 服务，从而可使用个性域名（*.github.io），还能减少一定的流量开销。
+
+Fork 本项目，进入 `gh-pages` 分支（该分支内容和 `www` 目录相同），编辑 `conf.js` 文件：
 
 * 节点列表（`node_map` 字段，包括节点 id 和节点主机）
 
 * 默认节点（`node_default` 字段，指定节点 id）
 
 访问 `https://用户名.github.io/jsproxy` 预览。
-
-GitHub 支持[自定义域名](https://help.github.com/en/articles/using-a-custom-domain-with-github-pages)。也可以将文件发布到自己的 Web 服务器上。
 
 
 # 维护

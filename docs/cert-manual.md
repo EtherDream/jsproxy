@@ -13,10 +13,10 @@
 
 3.文件保存到服务器 `~/server/acme/.well-known/acme-challenge/` 目录
 
-4.转发 80 端口到 10080 端口（需要 root 权限）
+4.转发 80 端口到 8080 端口（需要 root 权限）
 
 ```bash
-iptables -t nat -I PREROUTING 1 -p tcp --dport 80 -j REDIRECT --to-ports 10080
+iptables -t nat -I PREROUTING 1 -p tcp --dport 80 -j REDIRECT --to-ports 
 ```
 
 当然也可以使用其他 Web 服务，只要该文件能被外部访问就可以。
