@@ -5,7 +5,7 @@
  */
 const ASSET_URL = 'https://zjcqoo.github.io'
 
-const JS_VER = 7
+const JS_VER = 8
 const MAX_RETRY = 1
 
 
@@ -22,14 +22,11 @@ const PREFLIGHT_INIT = {
 /**
  * @param {string} message
  * @param {number} status
+ * @param {any} headers
  */
-function makeRes(message, status) {
-  return new Response(message, {
-    status,
-    headers: {
-      'cache-control': 'no-cache'
-    }
-  })
+function makeRes(message, status = 200, headers = {}) {
+  headers['cache-control'] = 'no-cache'
+  return new Response(message, {status, headers})
 }
 
 
@@ -45,7 +42,7 @@ addEventListener('fetch', e => {
     ret = handler(req)
     break
   case '/works':
-    ret = makeRes('it works', 200)
+    ret = makeRes('it works')
     break
   default:
     // static files
@@ -190,7 +187,9 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
           return proxy(urlObj, reqInit, acehOld, rawLen, retryTimes + 1)
         }
       }
-      return makeRes(`bad len (old: ${rawLen} new: ${newLen})`, 400)
+      return makeRes(`error`, 400, {
+        '--error': 'bad len:' + newLen
+      })
     }
 
     if (retryTimes > 1) {
