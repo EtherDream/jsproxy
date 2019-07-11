@@ -26,47 +26,51 @@ const PREFLIGHT_INIT = {
  */
 function makeRes(message, status = 200, headers = {}) {
   headers['cache-control'] = 'no-cache'
+  headers['vary'] = '--url'
+  headers['access-control-allow-origin'] = '*'
   return new Response(message, {status, headers})
 }
 
 
 addEventListener('fetch', e => {
+  const ret = fetchHandler(e)
+    .catch(err => makeRes('cfworker error:' + err, 502))
+  e.respondWith(ret)
+})
+
+
+function fetchHandler(e) {
   const req = e.request
   const urlStr = req.url
   const urlObj = new URL(urlStr)
-  let ret
 
-  // HTTP 跳转到 HTTPS
   if (urlObj.protocol === 'http:') {
     urlObj.protocol = 'https:'
-    ret = makeRes('', 301, {
+    return makeRes('', 301, {
       'strict-transport-security': 'max-age=99999999; includeSubDomains; preload',
       'location': urlObj.href,
     })
-    e.respondWith(ret)
-    return
   }
 
   switch (urlObj.pathname) {
   case '/http':
-    ret = handler(req)
-    break
+    return httpHandler(req)
+  case '/ws':
+    return makeRes('not support', 400)
   case '/works':
-    ret = makeRes('it works')
-    break
+    return makeRes('it works')
   default:
     // static files
-    ret = fetch(ASSET_URL + urlObj.pathname)
-    break
+    return fetch(ASSET_URL + urlObj.pathname)
   }
-  e.respondWith(ret)
-})
+}
+
 
 
 /**
  * @param {Request} req
  */
-async function handler(req) {
+async function httpHandler(req) {
   const reqHdrRaw = req.headers
   if (reqHdrRaw.has('x-jsproxy')) {
     return Response.error()
@@ -130,9 +134,14 @@ async function handler(req) {
   if (!urlObj) {
     return makeRes('missing url param', 403)
   }
+
+  /** @type {RequestInit} */
   const reqInit = {
     method: req.method,
     headers: reqHdrNew,
+  }
+  if (req.method === 'POST') {
+    reqInit.body = req.body
   }
   return proxy(urlObj, reqInit, acehOld, rawLen, 0)
 }
@@ -197,7 +206,7 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
           return proxy(urlObj, reqInit, acehOld, rawLen, retryTimes + 1)
         }
       }
-      return makeRes(`error`, 400, {
+      return makeRes('error', 400, {
         '--error': 'bad len:' + newLen
       })
     }
