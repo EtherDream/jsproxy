@@ -36,6 +36,16 @@ addEventListener('fetch', e => {
   const urlObj = new URL(urlStr)
   let ret
 
+  // HTTP 跳转到 HTTPS
+  if (urlObj.protocol === 'http:') {
+    urlObj.protocol = 'https:'
+    ret = makeRes('', 301, {
+      'strict-transport-security': 'max-age=99999999; includeSubDomains; preload',
+      'location': urlObj.href,
+    })
+    e.respondWith(ret)
+    return
+  }
 
   switch (urlObj.pathname) {
   case '/http':
