@@ -103,6 +103,7 @@ local function nodeSwitched()
   addHdr('--switched', '1')
 
   ngx.header['cache-control'] = 'no-cache'
+  ngx.header['vary'] = '--url'
   ngx.var._switched = resLenStr
   ngx.ctx._switched = true
 
