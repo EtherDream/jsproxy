@@ -5,10 +5,10 @@
  */
 const ASSET_URL = 'https://zjcqoo.github.io'
 
-const JS_VER = 8
+const JS_VER = 9
 const MAX_RETRY = 1
 
-
+/** @type {RequestInit} */
 const PREFLIGHT_INIT = {
   status: 204,
   headers: new Headers({
@@ -22,7 +22,7 @@ const PREFLIGHT_INIT = {
 /**
  * @param {string} message
  * @param {number} status
- * @param {any} headers
+ * @param {Object<string, string>} headers
  */
 function makeRes(message, status = 200, headers = {}) {
   headers['cache-control'] = 'no-cache'
@@ -39,7 +39,10 @@ addEventListener('fetch', e => {
 })
 
 
-function fetchHandler(e) {
+/**
+ * @param {FetchEvent} e 
+ */
+async function fetchHandler(e) {
   const req = e.request
   const urlStr = req.url
   const urlObj = new URL(urlStr)
@@ -66,11 +69,10 @@ function fetchHandler(e) {
 }
 
 
-
 /**
  * @param {Request} req
  */
-async function httpHandler(req) {
+function httpHandler(req) {
   const reqHdrRaw = req.headers
   if (reqHdrRaw.has('x-jsproxy')) {
     return Response.error()
