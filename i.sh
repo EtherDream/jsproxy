@@ -57,7 +57,7 @@ gen_cert() {
     ip=$(curl -s $i)
 
     if [[ ! $ip ]]; then
-      warn "获取失败"
+      warn "获取失败"
       continue
     fi
 
@@ -179,7 +179,7 @@ install() {
   fi
 
   if [ -d server ]; then
-    backup="$INSTALL_DIR/bak/$(date +%Y_%m_%d_%H_%M_%S)"
+    local backup="$INSTALL_DIR/bak/$(date +%Y_%m_%d_%H_%M_%S)"
     warn "当前 server 目录备份到 $backup"
     mkdir -p $backup
     mv server $backup
