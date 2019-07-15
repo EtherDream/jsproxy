@@ -57,7 +57,7 @@ gen_cert() {
     ip=$(curl -s $i)
 
     if [[ ! $ip ]]; then
-      warn "获取失败"
+      warn "获取失败"
       continue
     fi
 

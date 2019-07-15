@@ -23,17 +23,27 @@ end
 
 local function flushHdr()
   if detail then
-    expose = expose .. ',--s'
+    if status ~= 200 then
+      expose = expose .. ',--s'
+    end
     -- 该字段不在 aceh 中，如果浏览器能读取到，说明支持 * 通配
     ngx.header['--t'] = '1'
   end
 
-  local status = ngx.status
-
   ngx.header['access-control-expose-headers'] = expose
   ngx.header['access-control-allow-origin'] = '*'
   ngx.header['vary'] = vary
-  ngx.header['--s'] = status
+
+  local status = ngx.status
+
+  -- 前端优先使用该字段作为状态码
+  if status ~= 200 then
+    ngx.header['--s'] = status
+  end
+
+  -- 保留原始状态码，便于控制台调试
+  -- 例如 404 显示红色，如果统一设置成 200 则没有颜色区分
+  -- 需要转义 30X 重定向，否则不符合 cors 标准
   if
     status == 301 or
     status == 302 or
