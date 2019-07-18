@@ -228,6 +228,7 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
 
   resHdrNew.delete('content-security-policy')
   resHdrNew.delete('content-security-policy-report-only')
+  resHdrNew.delete('clear-site-data')
 
   if (status === 301 ||
       status === 302 ||

@@ -1,7 +1,8 @@
 {
   "env": {
     "browser": true,
-    "es6": true
+    "es6": true,
+    "serviceworker": true
   },
   "extends": "eslint:recommended",
   "globals": {
@@ -13,10 +14,8 @@
     "sourceType": "module"
   },
   "rules": {
-    "no-console": "warn",
     "no-empty": "warn",
     "no-unused-vars": "warn",
-    "no-debugger": "warn",
     "no-constant-condition": "warn"
   }
 }
