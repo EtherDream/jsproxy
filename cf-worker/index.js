@@ -5,7 +5,7 @@
  */
 const ASSET_URL = 'https://zjcqoo.github.io'
 
-const JS_VER = 9
+const JS_VER = 10
 const MAX_RETRY = 1
 
 /** @type {RequestInit} */
@@ -20,21 +20,22 @@ const PREFLIGHT_INIT = {
 }
 
 /**
- * @param {string} message
+ * @param {any} body
  * @param {number} status
  * @param {Object<string, string>} headers
  */
-function makeRes(message, status = 200, headers = {}) {
+function makeRes(body, status = 200, headers = {}) {
   headers['cache-control'] = 'no-cache'
   headers['vary'] = '--url'
+  headers['--ver'] = JS_VER
   headers['access-control-allow-origin'] = '*'
-  return new Response(message, {status, headers})
+  return new Response(body, {status, headers})
 }
 
 
 addEventListener('fetch', e => {
   const ret = fetchHandler(e)
-    .catch(err => makeRes('cfworker error:' + err, 502))
+    .catch(err => makeRes('cfworker error:\n' + err.stack, 502))
   e.respondWith(ret)
 })
 
@@ -141,6 +142,7 @@ function httpHandler(req) {
   const reqInit = {
     method: req.method,
     headers: reqHdrNew,
+    redirect: 'manual',
   }
   if (req.method === 'POST') {
     reqInit.body = req.body
@@ -208,8 +210,9 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
           return proxy(urlObj, reqInit, acehOld, rawLen, retryTimes + 1)
         }
       }
-      return makeRes('error', 400, {
-        '--error': 'bad len:' + newLen
+      return makeRes(res.body, 400, {
+        '--error': `bad len: ${newLen}, except: ${rawLen}`,
+        'access-control-expose-headers': '--error',
       })
     }
 
