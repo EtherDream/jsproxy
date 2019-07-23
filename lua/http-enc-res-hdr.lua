@@ -9,9 +9,6 @@ local expose = '*'
 -- 该值为 true 表示浏览器不支持 aceh: *，需返回详细的头部列表
 local detail = ngx.ctx._acehOld
 
--- 由于接口路径固定，为避免被缓存，以请求头的 --url 值区分缓存
-local vary = '--url'
-
 
 local function addHdr(k, v)
   ngx.header[k] = v
@@ -32,7 +29,6 @@ local function flushHdr()
 
   ngx.header['access-control-expose-headers'] = expose
   ngx.header['access-control-allow-origin'] = '*'
-  ngx.header['vary'] = vary
 
   local status = ngx.status
 
@@ -54,15 +50,6 @@ local function flushHdr()
     status = status + 10
   end
   ngx.status = status
-end
-
-
-local function addVary(v)
-  if type(v) == 'table' then
-    vary = vary .. ',' .. table.concat(v, ',')
-  else
-    vary = vary .. ',' .. v
-  end
 end
 
 
@@ -113,7 +100,6 @@ local function nodeSwitched()
   addHdr('--switched', '1')
 
   ngx.header['cache-control'] = 'no-cache'
-  ngx.header['vary'] = '--url'
   ngx.var._switched = resLenStr
   ngx.ctx._switched = true
 
@@ -147,9 +133,6 @@ for k, v in pairs(h) do
     end
     ngx.header[k] = nil
 
-  elseif k == 'vary' then
-    addVary(v)
-
   elseif detail and
     -- 非简单头无法被 fetch 读取，需添加到 aceh 列表 --
     -- https://developer.mozilla.org/en-US/docs/Glossary/Simple_response_header
@@ -162,6 +145,11 @@ for k, v in pairs(h) do
   then
     expose = expose .. ',' .. k
   end
+end
+
+-- 不缓存非 GET 请求
+if ngx.req.get_method() ~= 'GET' then
+  ngx.header['cache-control'] = 'no-cache'
 end
 
 flushHdr()

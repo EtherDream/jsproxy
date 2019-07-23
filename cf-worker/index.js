@@ -25,8 +25,6 @@ const PREFLIGHT_INIT = {
  * @param {Object<string, string>} headers
  */
 function makeRes(body, status = 200, headers = {}) {
-  headers['cache-control'] = 'no-cache'
-  headers['vary'] = '--url'
   headers['--ver'] = JS_VER
   headers['access-control-allow-origin'] = '*'
   return new Response(body, {status, headers})
@@ -47,6 +45,7 @@ async function fetchHandler(e) {
   const req = e.request
   const urlStr = req.url
   const urlObj = new URL(urlStr)
+  const {pathname} = urlObj
 
   if (urlObj.protocol === 'http:') {
     urlObj.protocol = 'https:'
@@ -56,16 +55,18 @@ async function fetchHandler(e) {
     })
   }
 
-  switch (urlObj.pathname) {
-  case '/http':
+  if (pathname.startsWith('/http')) {
     return httpHandler(req)
+  }
+
+  switch (pathname) {
   case '/ws':
     return makeRes('not support', 400)
   case '/works':
     return makeRes('it works')
   default:
     // static files
-    return fetch(ASSET_URL + urlObj.pathname)
+    return fetch(ASSET_URL + pathname)
   }
 }
 
@@ -86,8 +87,13 @@ function httpHandler(req) {
     return new Response(null, PREFLIGHT_INIT)
   }
 
-  let urlObj = null
-  let extHdrs = null
+  const urlStr = req.url.substr(6)
+  try {
+    var urlObj = new URL(urlStr)
+  } catch (err) {
+    return makeRes('invalid url: ' + urlStr, 403)
+  }
+
   let acehOld = false
   let rawSvr = ''
   let rawLen = ''
@@ -96,46 +102,34 @@ function httpHandler(req) {
   const reqHdrNew = new Headers(reqHdrRaw)
   reqHdrNew.set('x-jsproxy', '1')
 
-  for (const [k, v] of reqHdrRaw.entries()) {
-    if (!k.startsWith('--')) {
-      continue
-    }
-    reqHdrNew.delete(k)
+  // 此处逻辑和 http-dec-req-hdr.lua 大致相同
+  // https://github.com/EtherDream/jsproxy/blob/master/lua/http-dec-req-hdr.lua
+  const {sys, ext} = JSON.parse(reqHdrNew.get('accept'))
 
-    const k2 = k.substr(2)
-    switch (k2) {
-    case 'url':
-      urlObj = new URL(v)
-      break
+  // 系统信息
+  for (const [k, v] of Object.entries(sys)) {
+    switch (k) {
     case 'aceh':
       acehOld = true
       break
     case 'raw-info':
       [rawSvr, rawLen, rawEtag] = v.split('|')
       break
-    case 'level':
-    case 'mode':
-    case 'type':
-      break
-    case 'ext':
-      extHdrs = JSON.parse(v)
-      break
-    default:
-      if (v) {
-        reqHdrNew.set(k2, v)
-      } else {
-        reqHdrNew.delete(k2)
-      }
-      break
     }
   }
-  if (extHdrs) {
-    for (const [k, v] of Object.entries(extHdrs)) {
-      reqHdrNew.set(k, v)
+
+  // 原始 HTTP 字段
+  let hasRawAccept = false
+
+  for (const [k, v] of Object.entries(ext)) {
+    if (k === 'accept') {
+      hasRawAccept = true
     }
+    reqHdrNew.set(k, v)
   }
-  if (!urlObj) {
-    return makeRes('missing url param', 403)
+
+  if (!hasRawAccept) {
+    reqHdrNew.delete('accept')
   }
 
   /** @type {RequestInit} */
@@ -163,7 +157,6 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
   const resHdrNew = new Headers(resHdrOld)
 
   let expose = '*'
-  let vary = '--url'
   
   for (const [k, v] of resHdrOld.entries()) {
     if (k === 'access-control-allow-origin' ||
@@ -177,9 +170,6 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
         expose = expose + ',' + x
       }
       resHdrNew.delete(k)
-    }
-    else if (k === 'vary') {
-      vary = vary + ',' + v
     }
     else if (acehOld &&
       k !== 'cache-control' &&
@@ -225,7 +215,6 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
 
   resHdrNew.set('access-control-expose-headers', expose)
   resHdrNew.set('access-control-allow-origin', '*')
-  resHdrNew.set('vary', vary)
   resHdrNew.set('--s', status)
   resHdrNew.set('--ver', JS_VER)
 

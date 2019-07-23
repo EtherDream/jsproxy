@@ -1,20 +1,18 @@
--- 功能：还原 HTTP 请求头
--- 阶段：access_by_lua
+-- 还原 HTTP 请求头
+-- 前端只保留简单字段（防止出现 preflight），
+-- 其余字段及系统信息，存储在 Accept 字段里（JSON 格式）。
 
+local cjson = require('cjson')
 local hdrs, err = ngx.req.get_headers()
-local extHdrs
+ngx.log(ngx.ALERT, 'accept:' .. hdrs['accept'])
+local info = ngx.unescape_uri(hdrs['accept'])
+local json = cjson.decode(info)
 
-for k, v in pairs(hdrs) do
-  if k:sub(1, 2) ~= '--' then
-    goto continue
-  end
+-- 系统信息
+local sys = json['sys']
 
-  ngx.req.clear_header(k)
-  k = k:sub(3)
-
-  if k == 'url' then
-    ngx.var._url = v
-  elseif k == 'ver' then
+for k, v in pairs(sys) do
+  if k == 'ver' then
     ngx.var._ver = v
   elseif k == 'type' then
     ngx.var._type = v
@@ -25,20 +23,25 @@ for k, v in pairs(hdrs) do
   elseif k == 'level' then
     ngx.var._level = v
     ngx.ctx._level = tonumber(v)
-  elseif k == 'ext' then
-    extHdrs = require('cjson').decode(v)
-  else
-    if k == 'referer' then
-      ngx.var._ref = v
-    end
-    ngx.req.set_header(k, v)
-  end
-
-  ::continue::
-end
-
-if extHdrs then
-  for k, v in pairs(extHdrs) do
-    ngx.req.set_header(k, v)
   end
 end
+
+-- 原始 HTTP 字段
+local ext = json['ext']
+local hasRawAccept = false
+
+for k, v in pairs(ext) do
+  if k == 'accept' then
+    hasRawAccept = true
+  elseif k == 'referer' then
+    ngx.var._ref = v
+  end
+  ngx.req.set_header(k, v)
+end
+
+if not hasRawAccept then
+  ngx.req.clear_header('accept')
+end
+
+-- 删除 URL 的 '/http/' 前缀
+ngx.var._url = ngx.var.request_uri:sub(7)
