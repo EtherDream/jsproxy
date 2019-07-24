@@ -14,7 +14,6 @@ const PREFLIGHT_INIT = {
   headers: new Headers({
     'access-control-allow-origin': '*',
     'access-control-allow-methods': 'GET,POST,PUT,PATCH,TRACE,DELETE,HEAD,OPTIONS',
-    'access-control-allow-headers': '--raw-info,--level,--url,--referer,--cookie,--origin,--ext,--aceh,--ver,--type,--mode,accept,accept-charset,accept-encoding,accept-language,accept-datetime,authorization,cache-control,content-length,content-type,date,if-match,if-modified-since,if-none-match,if-range,if-unmodified-since,max-forwards,pragma,range,te,upgrade,upgrade-insecure-requests,x-requested-with,chrome-proxy,purpose',
     'access-control-max-age': '1728000',
   }),
 }
@@ -55,11 +54,13 @@ async function fetchHandler(e) {
     })
   }
 
-  if (pathname.startsWith('/http')) {
-    return httpHandler(req)
+  if (pathname.startsWith('/http/')) {
+    return httpHandler(req, pathname)
   }
 
   switch (pathname) {
+  case '/http':
+    return makeRes('请更新 cfworker 到最新版本!')
   case '/ws':
     return makeRes('not support', 400)
   case '/works':
@@ -73,8 +74,9 @@ async function fetchHandler(e) {
 
 /**
  * @param {Request} req
+ * @param {string} pathname
  */
-function httpHandler(req) {
+function httpHandler(req, pathname) {
   const reqHdrRaw = req.headers
   if (reqHdrRaw.has('x-jsproxy')) {
     return Response.error()
@@ -87,13 +89,7 @@ function httpHandler(req) {
     return new Response(null, PREFLIGHT_INIT)
   }
 
-  const urlStr = req.url.substr(6)
-  try {
-    var urlObj = new URL(urlStr)
-  } catch (err) {
-    return makeRes('invalid url: ' + urlStr, 403)
-  }
-
+  let urlStr = ''
   let acehOld = false
   let rawSvr = ''
   let rawLen = ''
@@ -104,32 +100,51 @@ function httpHandler(req) {
 
   // 此处逻辑和 http-dec-req-hdr.lua 大致相同
   // https://github.com/EtherDream/jsproxy/blob/master/lua/http-dec-req-hdr.lua
-  const {sys, ext} = JSON.parse(reqHdrNew.get('accept'))
+  const refer = reqHdrNew.get('referer')
+  const query = refer.substr(refer.indexOf('?') + 1)
+  const param = new URLSearchParams(query)
 
-  // 系统信息
-  for (const [k, v] of Object.entries(sys)) {
-    switch (k) {
-    case 'aceh':
-      acehOld = true
-      break
-    case 'raw-info':
-      [rawSvr, rawLen, rawEtag] = v.split('|')
-      break
+  for (const [k, v] of Object.entries(param)) {
+    if (k.substr(0, 2) === '--') {
+      // 系统信息
+      switch (k.substr(2)) {
+      case 'url':
+        urlStr = v
+        break
+      case 'aceh':
+        acehOld = true
+        break
+      case 'raw-info':
+        [rawSvr, rawLen, rawEtag] = v.split('|')
+        break
+      }
+    } else {
+      // 还原 HTTP 请求头
+      if (v) {
+        reqHdrNew.set(k, v)
+      } else {
+        reqHdrNew.delete(k)
+      }
     }
   }
-
-  // 原始 HTTP 字段
-  let hasRawAccept = false
-
-  for (const [k, v] of Object.entries(ext)) {
-    if (k === 'accept') {
-      hasRawAccept = true
-    }
-    reqHdrNew.set(k, v)
+  if (!param.has('referer')) {
+    reqHdrNew.delete('referer')
   }
 
-  if (!hasRawAccept) {
-    reqHdrNew.delete('accept')
+  if (!urlStr) {
+    urlStr = pathname.substr('/http/'.length)
+  }
+
+  // cfworker 会把路径中的 `//` 合并成 `/`
+  const m = urlStr.match(/^https?:(\/+)/)
+  if (m && m[1] !== '//') {
+    urlStr = urlStr.replace('/', '//')
+  }
+
+  try {
+    var urlObj = new URL(urlStr)
+  } catch (err) {
+    return makeRes('invalid url: ' + urlStr, 403)
   }
 
   /** @type {RequestInit} */
