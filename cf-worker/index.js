@@ -89,7 +89,6 @@ function httpHandler(req, pathname) {
     return new Response(null, PREFLIGHT_INIT)
   }
 
-  let urlStr = ''
   let acehOld = false
   let rawSvr = ''
   let rawLen = ''
@@ -108,9 +107,6 @@ function httpHandler(req, pathname) {
     if (k.substr(0, 2) === '--') {
       // 系统信息
       switch (k.substr(2)) {
-      case 'url':
-        urlStr = v
-        break
       case 'aceh':
         acehOld = true
         break
@@ -131,20 +127,18 @@ function httpHandler(req, pathname) {
     reqHdrNew.delete('referer')
   }
 
-  if (!urlStr) {
-    urlStr = pathname.substr('/http/'.length)
-  }
+  let targetUrlStr = pathname.substr('/http/'.length)
 
   // cfworker 会把路径中的 `//` 合并成 `/`
-  const m = urlStr.match(/^https?:(\/+)/)
+  const m = targetUrlStr.match(/^https?:(\/+)/)
   if (m && m[1] !== '//') {
-    urlStr = urlStr.replace('/', '//')
+    targetUrlStr = targetUrlStr.replace('/', '//')
   }
 
   try {
-    var urlObj = new URL(urlStr)
+    var targetUrlObj = new URL(targetUrlStr)
   } catch (err) {
-    return makeRes('invalid url: ' + urlStr, 403)
+    return makeRes('invalid url: ' + targetUrlStr, 403)
   }
 
   /** @type {RequestInit} */
@@ -156,7 +150,7 @@ function httpHandler(req, pathname) {
   if (req.method === 'POST') {
     reqInit.body = req.body
   }
-  return proxy(urlObj, reqInit, acehOld, rawLen, 0)
+  return proxy(targetUrlObj, reqInit, acehOld, rawLen, 0)
 }
 
 

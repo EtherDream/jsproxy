@@ -1,5 +1,4 @@
 -- 还原 HTTP 请求头
-local hasRawUrl = false
 local hasRawRefer = false
 
 local hdrs = ngx.req.get_headers()
@@ -12,10 +11,7 @@ for k, v in pairs(param) do
   if k:sub(1, 2) == '--' then
     k = k:sub(3)
 
-    if k == 'url' then
-      ngx.var._url = v
-      hasRawUrl = true
-    elseif k == 'ver' then
+    if k == 'ver' then
       ngx.var._ver = v
     elseif k == 'type' then
       ngx.var._type = v
@@ -41,7 +37,5 @@ if not hasRawRefer then
   ngx.req.clear_header('referer')
 end
 
-if not hasRawUrl then
-  -- 删除 URL 的 '/http/' 前缀
-  ngx.var._url = ngx.var.request_uri:sub(7)
-end
+-- 删除 URL 的 '/http/' 前缀
+ngx.var._url = ngx.var.request_uri:sub(7)
