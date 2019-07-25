@@ -131,8 +131,7 @@ function httpHandler(req, pathname) {
   }
 
   // cfworker 会把路径中的 `//` 合并成 `/`
-  let targetUrlStr = pathname.replace(/^(https?):\/+/, "$1://")
-
+  const targetUrlStr = pathname.replace(/^(https?):\/+/, '$1://')
   try {
     var targetUrlObj = new URL(targetUrlStr)
   } catch (err) {
