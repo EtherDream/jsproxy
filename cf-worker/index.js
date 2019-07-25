@@ -30,6 +30,18 @@ function makeRes(body, status = 200, headers = {}) {
 }
 
 
+/**
+ * @param {string} urlStr 
+ */
+function newUrl(urlStr) {
+  try {
+    return new URL(urlStr)
+  } catch (err) {
+    return null
+  }
+}
+
+
 addEventListener('fetch', e => {
   const ret = fetchHandler(e)
     .catch(err => makeRes('cfworker error:\n' + err.stack, 502))
@@ -131,11 +143,10 @@ function httpHandler(req, pathname) {
   }
 
   // cfworker 会把路径中的 `//` 合并成 `/`
-  const targetUrlStr = pathname.replace(/^(https?):\/+/, '$1://')
-  try {
-    var targetUrlObj = new URL(targetUrlStr)
-  } catch (err) {
-    return makeRes('invalid url: ' + targetUrlStr, 403)
+  const urlStr = pathname.replace(/^(https?):\/+/, '$1://')
+  const urlObj = newUrl(urlStr)
+  if (!urlObj) {
+    return makeRes('invalid proxy url: ' + urlStr, 403)
   }
 
   /** @type {RequestInit} */
@@ -147,7 +158,7 @@ function httpHandler(req, pathname) {
   if (req.method === 'POST') {
     reqInit.body = req.body
   }
-  return proxy(targetUrlObj, reqInit, acehOld, rawLen, 0)
+  return proxy(urlObj, reqInit, acehOld, rawLen, 0)
 }
 
 
