@@ -44,7 +44,7 @@ async function fetchHandler(e) {
   const req = e.request
   const urlStr = req.url
   const urlObj = new URL(urlStr)
-  const {pathname} = urlObj
+  const path = urlObj.href.substr(urlObj.origin.length)
 
   if (urlObj.protocol === 'http:') {
     urlObj.protocol = 'https:'
@@ -54,11 +54,11 @@ async function fetchHandler(e) {
     })
   }
 
-  if (pathname.startsWith('/http/')) {
-    return httpHandler(req, pathname)
+  if (path.startsWith('/http/')) {
+    return httpHandler(req, path.substr(6))
   }
 
-  switch (pathname) {
+  switch (path) {
   case '/http':
     return makeRes('请更新 cfworker 到最新版本!')
   case '/ws':
@@ -67,7 +67,7 @@ async function fetchHandler(e) {
     return makeRes('it works')
   default:
     // static files
-    return fetch(ASSET_URL + pathname)
+    return fetch(ASSET_URL + path)
   }
 }
 
@@ -101,6 +101,9 @@ function httpHandler(req, pathname) {
   // https://github.com/EtherDream/jsproxy/blob/master/lua/http-dec-req-hdr.lua
   const refer = reqHdrNew.get('referer')
   const query = refer.substr(refer.indexOf('?') + 1)
+  if (!query) {
+    return makeRes('missing params', 403)
+  }
   const param = new URLSearchParams(query)
 
   for (const [k, v] of Object.entries(param)) {
@@ -127,13 +130,8 @@ function httpHandler(req, pathname) {
     reqHdrNew.delete('referer')
   }
 
-  let targetUrlStr = pathname.substr('/http/'.length)
-
   // cfworker 会把路径中的 `//` 合并成 `/`
-  const m = targetUrlStr.match(/^https?:(\/+)/)
-  if (m && m[1] !== '//') {
-    targetUrlStr = targetUrlStr.replace('/', '//')
-  }
+  let targetUrlStr = pathname.replace(/^(https?):\/+/, "$1://")
 
   try {
     var targetUrlObj = new URL(targetUrlStr)
