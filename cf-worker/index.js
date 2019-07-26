@@ -3,7 +3,7 @@
 /**
  * static files (404.html, sw.js, conf.js)
  */
-const ASSET_URL = 'https://zjcqoo.github.io'
+const ASSET_URL = 'https://etherdream.github.io/jsproxy'
 
 const JS_VER = 10
 const MAX_RETRY = 1

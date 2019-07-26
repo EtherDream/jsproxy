@@ -26,7 +26,7 @@
 
 # 修改配置
 
-默认情况下，静态资源从 `https://zjcqoo.github.io` 反向代理，可通过代码中 `ASSET_URL` 配置，从而可使用自定义的 `conf.js` 配置。
+默认情况下，静态资源从 `https://etherdream.github.io/jsproxy` 反向代理，可通过代码中 `ASSET_URL` 配置，从而可使用自定义的 `conf.js` 配置。
 
 
 # 存在问题
