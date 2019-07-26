@@ -23,27 +23,10 @@
 
 如果不够用，可注册多个 Worker，在 `conf.js` 中配置多线路负载均衡。或者升级到 $5 的高级版本，每月可用 1000 万次请求（超出部分 $0.5/百万次请求）。
 
-如果远不够用，建议和服务器组合使用。因为 cfworker 是按请求次数计费的，所以小文件更适合通过服务器代理，大文件走 cfworker 才合算。可参考下面的 `加速功能`。
-
 
 # 修改配置
 
-默认情况下，静态资源从 `https://zjcqoo.github.io` 反向代理，可通过代码中 `ASSET_URL` 配置，从而可使用自定义的 `conf.js` 配置。
-
-
-# 加速功能
-
-如果你已有服务器，也可通过 CloudFlare Worker 分担大文件的代理。
-
-前端修改：`conf.js` 的 `cfworker` 节点 `lines` 配置。
-
-后端修改：`lua/http-enc-res-hdr.lua` 的 [114-116 行](https://github.com/EtherDream/jsproxy/blob/master/lua/http-enc-res-hdr.lua#L114-L116) 注释打开，重启服务生效。
-
-可在 [84行](https://github.com/EtherDream/jsproxy/blob/master/lua/http-enc-res-hdr.lua#L84) 处修改大于多少字节的静态资源走加速。
-
-该功能目前还在实验中，有问题或者更好的思路可交流。
-
-（推荐下行流量免费且不限速的服务器，可节省大量费用）
+默认情况下，静态资源从 `https://etherdream.github.io/jsproxy` 反向代理，可通过代码中 `ASSET_URL` 配置，从而可使用自定义的 `conf.js` 配置。
 
 
 # 存在问题

@@ -9,9 +9,6 @@ local expose = '*'
 -- 该值为 true 表示浏览器不支持 aceh: *，需返回详细的头部列表
 local detail = ngx.ctx._acehOld
 
--- 由于接口路径固定，为避免被缓存，以请求头的 --url 值区分缓存
-local vary = '--url'
-
 
 local function addHdr(k, v)
   ngx.header[k] = v
@@ -23,17 +20,26 @@ end
 
 local function flushHdr()
   if detail then
-    expose = expose .. ',--s'
+    if status ~= 200 then
+      expose = expose .. ',--s'
+    end
     -- 该字段不在 aceh 中，如果浏览器能读取到，说明支持 * 通配
     ngx.header['--t'] = '1'
   end
 
-  local status = ngx.status
-
   ngx.header['access-control-expose-headers'] = expose
   ngx.header['access-control-allow-origin'] = '*'
-  ngx.header['vary'] = vary
-  ngx.header['--s'] = status
+
+  local status = ngx.status
+
+  -- 前端优先使用该字段作为状态码
+  if status ~= 200 then
+    ngx.header['--s'] = status
+  end
+
+  -- 保留原始状态码，便于控制台调试
+  -- 例如 404 显示红色，如果统一设置成 200 则没有颜色区分
+  -- 需要转义 30X 重定向，否则不符合 cors 标准
   if
     status == 301 or
     status == 302 or
@@ -44,15 +50,6 @@ local function flushHdr()
     status = status + 10
   end
   ngx.status = status
-end
-
-
-local function addVary(v)
-  if type(v) == 'table' then
-    vary = vary .. ',' .. table.concat(v, ',')
-  else
-    vary = vary .. ',' .. v
-  end
 end
 
 
@@ -111,9 +108,9 @@ local function nodeSwitched()
 end
 
 -- 节点切换功能，目前还在测试中（demo 中已开启）
--- if nodeSwitched() then
---   return
--- end
+if nodeSwitched() then
+  return
+end
 
 
 local h, err = ngx.resp.get_headers()
@@ -136,9 +133,6 @@ for k, v in pairs(h) do
     end
     ngx.header[k] = nil
 
-  elseif k == 'vary' then
-    addVary(v)
-
   elseif detail and
     -- 非简单头无法被 fetch 读取，需添加到 aceh 列表 --
     -- https://developer.mozilla.org/en-US/docs/Glossary/Simple_response_header
@@ -151,6 +145,11 @@ for k, v in pairs(h) do
   then
     expose = expose .. ',' .. k
   end
+end
+
+-- 不缓存非 GET 请求
+if ngx.req.get_method() ~= 'GET' then
+  ngx.header['cache-control'] = 'no-cache'
 end
 
 flushHdr()

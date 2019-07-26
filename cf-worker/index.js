@@ -3,46 +3,60 @@
 /**
  * static files (404.html, sw.js, conf.js)
  */
-const ASSET_URL = 'https://zjcqoo.github.io'
+const ASSET_URL = 'https://etherdream.github.io/jsproxy'
 
-const JS_VER = 8
+const JS_VER = 10
 const MAX_RETRY = 1
 
-
+/** @type {RequestInit} */
 const PREFLIGHT_INIT = {
   status: 204,
   headers: new Headers({
     'access-control-allow-origin': '*',
     'access-control-allow-methods': 'GET,POST,PUT,PATCH,TRACE,DELETE,HEAD,OPTIONS',
-    'access-control-allow-headers': '--raw-info,--level,--url,--referer,--cookie,--origin,--ext,--aceh,--ver,--type,--mode,accept,accept-charset,accept-encoding,accept-language,accept-datetime,authorization,cache-control,content-length,content-type,date,if-match,if-modified-since,if-none-match,if-range,if-unmodified-since,max-forwards,pragma,range,te,upgrade,upgrade-insecure-requests,x-requested-with,chrome-proxy,purpose',
     'access-control-max-age': '1728000',
   }),
 }
 
 /**
- * @param {string} message
+ * @param {any} body
  * @param {number} status
- * @param {any} headers
+ * @param {Object<string, string>} headers
  */
-function makeRes(message, status = 200, headers = {}) {
-  headers['cache-control'] = 'no-cache'
-  headers['vary'] = '--url'
+function makeRes(body, status = 200, headers = {}) {
+  headers['--ver'] = JS_VER
   headers['access-control-allow-origin'] = '*'
-  return new Response(message, {status, headers})
+  return new Response(body, {status, headers})
+}
+
+
+/**
+ * @param {string} urlStr 
+ */
+function newUrl(urlStr) {
+  try {
+    return new URL(urlStr)
+  } catch (err) {
+    return null
+  }
 }
 
 
 addEventListener('fetch', e => {
   const ret = fetchHandler(e)
-    .catch(err => makeRes('cfworker error:' + err, 502))
+    .catch(err => makeRes('cfworker error:\n' + err.stack, 502))
   e.respondWith(ret)
 })
 
 
-function fetchHandler(e) {
+/**
+ * @param {FetchEvent} e 
+ */
+async function fetchHandler(e) {
   const req = e.request
   const urlStr = req.url
   const urlObj = new URL(urlStr)
+  const path = urlObj.href.substr(urlObj.origin.length)
 
   if (urlObj.protocol === 'http:') {
     urlObj.protocol = 'https:'
@@ -52,25 +66,29 @@ function fetchHandler(e) {
     })
   }
 
-  switch (urlObj.pathname) {
+  if (path.startsWith('/http/')) {
+    return httpHandler(req, path.substr(6))
+  }
+
+  switch (path) {
   case '/http':
-    return httpHandler(req)
+    return makeRes('请更新 cfworker 到最新版本!')
   case '/ws':
     return makeRes('not support', 400)
   case '/works':
     return makeRes('it works')
   default:
     // static files
-    return fetch(ASSET_URL + urlObj.pathname)
+    return fetch(ASSET_URL + path)
   }
 }
 
 
-
 /**
  * @param {Request} req
+ * @param {string} pathname
  */
-async function httpHandler(req) {
+function httpHandler(req, pathname) {
   const reqHdrRaw = req.headers
   if (reqHdrRaw.has('x-jsproxy')) {
     return Response.error()
@@ -83,8 +101,6 @@ async function httpHandler(req) {
     return new Response(null, PREFLIGHT_INIT)
   }
 
-  let urlObj = null
-  let extHdrs = null
   let acehOld = false
   let rawSvr = ''
   let rawLen = ''
@@ -93,52 +109,51 @@ async function httpHandler(req) {
   const reqHdrNew = new Headers(reqHdrRaw)
   reqHdrNew.set('x-jsproxy', '1')
 
-  for (const [k, v] of reqHdrRaw.entries()) {
-    if (!k.startsWith('--')) {
-      continue
-    }
-    reqHdrNew.delete(k)
+  // 此处逻辑和 http-dec-req-hdr.lua 大致相同
+  // https://github.com/EtherDream/jsproxy/blob/master/lua/http-dec-req-hdr.lua
+  const refer = reqHdrNew.get('referer')
+  const query = refer.substr(refer.indexOf('?') + 1)
+  if (!query) {
+    return makeRes('missing params', 403)
+  }
+  const param = new URLSearchParams(query)
 
-    const k2 = k.substr(2)
-    switch (k2) {
-    case 'url':
-      urlObj = new URL(v)
-      break
-    case 'aceh':
-      acehOld = true
-      break
-    case 'raw-info':
-      [rawSvr, rawLen, rawEtag] = v.split('|')
-      break
-    case 'level':
-    case 'mode':
-    case 'type':
-      break
-    case 'ext':
-      extHdrs = JSON.parse(v)
-      break
-    default:
-      if (v) {
-        reqHdrNew.set(k2, v)
-      } else {
-        reqHdrNew.delete(k2)
+  for (const [k, v] of Object.entries(param)) {
+    if (k.substr(0, 2) === '--') {
+      // 系统信息
+      switch (k.substr(2)) {
+      case 'aceh':
+        acehOld = true
+        break
+      case 'raw-info':
+        [rawSvr, rawLen, rawEtag] = v.split('|')
+        break
       }
-      break
+    } else {
+      // 还原 HTTP 请求头
+      if (v) {
+        reqHdrNew.set(k, v)
+      } else {
+        reqHdrNew.delete(k)
+      }
     }
   }
-  if (extHdrs) {
-    for (const [k, v] of Object.entries(extHdrs)) {
-      reqHdrNew.set(k, v)
-    }
+  if (!param.has('referer')) {
+    reqHdrNew.delete('referer')
   }
+
+  // cfworker 会把路径中的 `//` 合并成 `/`
+  const urlStr = pathname.replace(/^(https?):\/+/, '$1://')
+  const urlObj = newUrl(urlStr)
   if (!urlObj) {
-    return makeRes('missing url param', 403)
+    return makeRes('invalid proxy url: ' + urlStr, 403)
   }
 
   /** @type {RequestInit} */
   const reqInit = {
     method: req.method,
     headers: reqHdrNew,
+    redirect: 'manual',
   }
   if (req.method === 'POST') {
     reqInit.body = req.body
@@ -159,7 +174,6 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
   const resHdrNew = new Headers(resHdrOld)
 
   let expose = '*'
-  let vary = '--url'
   
   for (const [k, v] of resHdrOld.entries()) {
     if (k === 'access-control-allow-origin' ||
@@ -173,9 +187,6 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
         expose = expose + ',' + x
       }
       resHdrNew.delete(k)
-    }
-    else if (k === 'vary') {
-      vary = vary + ',' + v
     }
     else if (acehOld &&
       k !== 'cache-control' &&
@@ -206,8 +217,9 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
           return proxy(urlObj, reqInit, acehOld, rawLen, retryTimes + 1)
         }
       }
-      return makeRes('error', 400, {
-        '--error': 'bad len:' + newLen
+      return makeRes(res.body, 400, {
+        '--error': `bad len: ${newLen}, except: ${rawLen}`,
+        'access-control-expose-headers': '--error',
       })
     }
 
@@ -220,12 +232,12 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
 
   resHdrNew.set('access-control-expose-headers', expose)
   resHdrNew.set('access-control-allow-origin', '*')
-  resHdrNew.set('vary', vary)
   resHdrNew.set('--s', status)
   resHdrNew.set('--ver', JS_VER)
 
   resHdrNew.delete('content-security-policy')
   resHdrNew.delete('content-security-policy-report-only')
+  resHdrNew.delete('clear-site-data')
 
   if (status === 301 ||
       status === 302 ||

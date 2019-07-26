@@ -1,17 +1,9 @@
 
 # 更新
 
+* 2019-07-24 [v0.1.0](tree/0.1.0) 发布，主要修复了缓存失效的问题。网络接口和之前版本不兼容，请及时更新服务端和 cfworker。
+
 * 2019-06-22 [cfworker 无服务器版](cf-worker) 发布，长期使用演示服务的请使用该版本。
-
-* 2019-06-11 前端脚本调整，首页可离线访问（如果长时间加载中，尝试多刷新几次或者隐身模式访问）
-
-* 2019-05-30 更新 cfworker，对 ytb 视频进行了优化（推荐选 1080p+，不会增加服务器压力）
-
-* 2019-05-29 nginx 增加静态资源服务，可同时支持代理接口和首页访问
-
-* 2019-05-27 增加 nio.io、sslip.io 后备域名，减少申请失败的几率
-
-* 2019-05-26 安装时自动申请证书（使用 xip.io 域名），安装后即可预览
 
 [查看更多](changelogs)
 
@@ -19,7 +11,11 @@
 # 安装
 
 ```bash
+<<<<<<< HEAD
 curl https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh | bash
+=======
+curl https://raw.githubusercontent.com/EtherDream/jsproxy/0.1.0/i.sh | bash
+>>>>>>> dev
 ```
 
 * 自动安装目前只支持 Linux x64，并且需要 root 权限
