@@ -11,11 +11,7 @@
 # 安装
 
 ```bash
-<<<<<<< HEAD
-curl https://raw.githubusercontent.com/EtherDream/jsproxy/master/i.sh | bash
-=======
 curl https://raw.githubusercontent.com/EtherDream/jsproxy/0.1.0/i.sh | bash
->>>>>>> dev
 ```
 
 * 自动安装目前只支持 Linux x64，并且需要 root 权限
