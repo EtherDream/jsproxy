@@ -1,0 +1,195 @@
+# HTTP 返回头存在 access-control-allow-origin: * 的站点，不走代理直接连接
+# 收集了部分，实验中...
+
+# google
+ssl.google-analytics.com
+
+# [public]
+cdn.jsdelivr.net
+unpkg.com
+cdnjs.cloudflare.com
+cdn.bootcss.com
+use.fontawesome.com
+fast.fonts.net
+script.hotjar.com
+
+# github
+github.githubassets.com
+avatars0.githubusercontent.com
+avatars1.githubusercontent.com
+avatars2.githubusercontent.com
+avatars3.githubusercontent.com
+
+desktop.github.com
+
+# flickr
+status.flickr.net
+
+# ali
+at.alicdn.com
+img.alicdn.com
+g.alicdn.com
+i.alicdn.com
+atanx.alicdn.com
+wwc.alicdn.com
+gw.alicdn.com
+assets.alicdn.com
+aeis.alicdn.com
+atanx.alicdn.com
+hudong.alicdn.com
+gma.alicdn.com
+
+sc01.alicdn.com
+sc02.alicdn.com
+sc03.alicdn.com
+sc04.alicdn.com
+
+cbu01.alicdn.com
+cbu02.alicdn.com
+cbu03.alicdn.com
+cbu04.alicdn.com
+
+# baidu
+# img*.bdimg.com
+img0.bdimg.com
+img1.bdimg.com
+img2.bdimg.com
+img3.bdimg.com
+img4.bdimg.com
+img5.bdimg.com
+
+webmap0.bdimg.com
+webmap1.bdimg.com
+iknowpc.bdimg.com
+bkssl.bdimg.com
+baikebcs.bdimg.com
+gh.bdstatic.com
+
+# qq
+3gimg.qq.com
+combo.b.qq.com
+
+# bilibili
+upos-hz-mirrorakam.akamaized.net
+
+# toutiao
+images.taboola.com
+images.taboola.com.cn
+images-dup.taboola.com
+
+# zhihu
+static.zhihu.com
+pic1.zhimg.com
+pic2.zhimg.com
+pic3.zhimg.com
+pic4.zhimg.com
+pic5.zhimg.com
+pic7.zhimg.com
+
+# jd
+img11.360buyimg.com
+
+# jianshu
+upload.jianshu.io
+upload-images.jianshu.io
+cdn2.jianshu.io
+
+# 163
+urswebzj.nosdn.127.net
+static.ws.126.net
+img1.cache.netease.com
+img2.cache.netease.com
+img3.cache.netease.com
+img4.cache.netease.com
+img5.cache.netease.com
+img6.cache.netease.com
+
+# sina
+js.t.sinajs.cn
+mjs.sinaimg.cn
+h5.sinaimg.cn
+
+# sohu
+0d077ef9e74d8.cdn.sohucs.com
+39d0825d09f05.cdn.sohucs.com
+5b0988e595225.cdn.sohucs.com
+caaceed4aeaf2.cdn.sohucs.com
+
+img01.sogoucdn.com
+img02.sogoucdn.com
+img03.sogoucdn.com
+img04.sogoucdn.com
+img05.sogoucdn.com
+
+# hupu
+w1.hoopchina.com.cn
+w2.hoopchina.com.cn
+w3.hoopchina.com.cn
+w4.hoopchina.com.cn
+shihuo.hupucdn.com
+
+# uc
+image.uc.cn
+
+# ...
+static.cnodejs.org
+static2.cnodejs.org
+2b.zol-img.com.cn
+img.pconline.com.cn
+angular.cn
+img1.dxycdn.com
+cdn.kastatic.org
+static.geetest.com
+cdn.registerdisney.go.com
+secure-us.imrworldwide.com
+img1.doubanio.com
+qnwww2.autoimg.cn
+qnwww3.autoimg.cn
+s.autoimg.cn
+
+hb.imgix.net
+main.qcloudimg.com
+vz-cdn2.contentabc.com
+twemoji.maxcdn.com
+fgn.cdn.serverable.com
+
+s1.hdslb.com
+s2.hdslb.com
+s3.hdslb.com
+
+# cnblogs
+common.cnblogs.com
+mathjax.cnblogs.com
+
+# csdn
+csdnimg.cn
+g.csdnimg.cn
+img-ads.csdn.net
+img-bss.csdn.net
+img-blog.csdn.net
+
+# ...
+static.geekbang.org
+static001.infoq.cn
+static.docs.com
+cdn1.developermedia.com
+cdn2.developermedia.com
+cdn.optimizely.com
+cdn.ampproject.org
+
+camshowverse.to
+static.camshowhub-cdn.to
+
+xqimg.imedao.com
+xavatar.imedao.com
+
+# ???
+img-l3.xvideos-cdn.com
+static-egc.xvideos-cdn.com
+img-hw.xvideos-cdn.com
+img-hw.xnxx-cdn.com
+static-egc.xnxx-cdn.com
+di.phncdn.com
+cv.phncdn.com
+roomimg.stream.highwebmedia.com
+w3.cdn.anvato.net

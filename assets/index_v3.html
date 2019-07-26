@@ -156,14 +156,11 @@
     }
 
     function showConf() {
-      const nodeMap = conf.node_map
-      Object.keys(nodeMap).forEach(id => {
-        const info = nodeMap[id]
-        if (info.hidden) {
-          return
+      for (const [id, node] of Object.entries(conf.node_map)) {
+        if (!node.hidden) {
+          addNodeItem(id, node.label)
         }
-        addNodeItem(id, info.label)
-      })
+      }
       updateSelected()
     }
   </script>
