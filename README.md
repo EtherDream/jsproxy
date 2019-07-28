@@ -66,6 +66,7 @@ Fork 本项目，进入 `gh-pages` 分支（该分支内容和 `www` 目录相�
 ```sh
 # 切换到 jsproxy 用户
 su - jsproxy
+cd server
 
 # 重启服务
 ./run.sh reload
@@ -77,10 +78,21 @@ su - jsproxy
 ./run.sh
 
 # 查看代理日志
-tail server/nginx/logs/proxy.log
+tail nginx/logs/proxy.log
 ```
 
 目前暂未实现开机自启动。
+
+
+# 如何卸载
+
+使用 root 执行：
+
+```
+./uninstall.sh
+```
+
+如果有开启端口转发，请手动删除。
 
 
 # 禁止外链
