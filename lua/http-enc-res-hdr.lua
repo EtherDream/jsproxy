@@ -33,7 +33,7 @@ local function flushHdr()
   local status = ngx.status
 
   -- 前端优先使用该字段作为状态码
-  if status ~= 200 then
+  if status ~= 200 and status ~= 304 then
     ngx.header['--s'] = status
   end
 
