@@ -26,10 +26,10 @@ jsproxy_config({
         'node-aliyun-sg.etherdream.com:8443': 1,
       },
     },
-    'mysite': {
-      label: '当前站点',
+    'kr': {
+      label: '韩国',
       lines: {
-        [location.host]: 1,
+        '1166.tk:8443': 1,
       }
     },
     // 该节点用于加载大体积的静态资源
@@ -53,7 +53,7 @@ jsproxy_config({
   /**
    * 默认节点
    */
-  node_default: 'mysite',
+  node_default: 'kr',
   // node_default: /jsproxy-demo\.\w+$/.test(location.host) ? 'demo-hk' : 'mysite',
 
   /**
