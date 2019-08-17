@@ -12,30 +12,30 @@ jsproxy_config({
 
   // 节点配置
   node_map: {
-    'demo-hk': {
-      label: '演示服务-香港节点',
+//     'demo-hk': {
+//       label: '演示服务-香港节点',
+//       lines: {
+//         // 主机:权重
+//         'node-aliyun-hk-1.etherdream.com:8443': 1,
+//         'node-aliyun-hk-2.etherdream.com:8443': 2,
+//       }
+//     },
+//     'demo-sg': {
+//       label: '演示服务-新加坡节点',
+//       lines: {
+//         'node-aliyun-sg.etherdream.com:8443': 1,
+//       },
+//     },
+    'kr': {
+      label: '韩国',
       lines: {
-        // 主机:权重
-        'node-aliyun-hk-1.etherdream.com:8443': 1,
-        'node-aliyun-hk-2.etherdream.com:8443': 2,
-      }
-    },
-    'demo-sg': {
-      label: '演示服务-新加坡节点',
-      lines: {
-        'node-aliyun-sg.etherdream.com:8443': 1,
-      },
-    },
-    'mysite': {
-      label: '当前站点',
-      lines: {
-        [location.host]: 1,
+        '1166.tk:8443': 1,
       }
     },
     // 该节点用于加载大体积的静态资源
     'cfworker': {
       label: '',
-      hidden: true,
+      hidden: false,
       lines: {
         // 收费版（高权重）
         'node-cfworker-2.etherdream.com': 4,
@@ -53,7 +53,7 @@ jsproxy_config({
   /**
    * 默认节点
    */
-  node_default: 'mysite',
+  node_default: 'kr',
   // node_default: /jsproxy-demo\.\w+$/.test(location.host) ? 'demo-hk' : 'mysite',
 
   /**
