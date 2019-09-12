@@ -3,7 +3,7 @@
 { # this ensures the entire script is downloaded #
 
 JSPROXY_VER=0.1.0
-OPENRESTY_VER=1.15.8.1
+OPENRESTY_VER=1.15.8.2
 
 SRC_URL=https://raw.githubusercontent.com/EtherDream/jsproxy/$JSPROXY_VER
 BIN_URL=https://raw.githubusercontent.com/EtherDream/jsproxy-bin/master
@@ -95,7 +95,7 @@ gen_cert() {
   fi
 
   for domain in ${domains[@]}; do
-    echo "校验域名 $domain ..."
+    log "校验域名 $domain ..."
 
     local ret=$(getent ahosts $domain | head -n1 | awk '{print $1}')
     if [[ $ret != $ip ]]; then
