@@ -41,6 +41,35 @@ function newUrl(urlStr) {
   }
 }
 
+// begin authentication
+const AUTH_ENABLE = false // whether enable authentication
+const userpass = {"user" : "pass"} // key-value pair of username and password
+const AUTH_REALM = "Authentication required" // string to display
+
+function checkAuthRequest(request) {
+  const header = new Map(request.headers)
+  //console.log(header)
+  if (!header.has("authorization")) {
+    return false
+  }
+  const auth = header.get("authorization").split(' ')
+  if (auth.length != 2 || auth[0] != "Basic") {
+    return false
+  }
+  return checkAuth(auth[1], userpass);
+}
+
+function checkAuth(str, userpass) {
+  const decoded = atob(str).split(":")
+  if (decoded.length != 2) {
+    return false
+  } else {
+    const user = decoded[0]
+    const pass = decoded[1]
+    return userpass[user] && userpass[user] == pass
+  }
+}
+// end authentication
 
 addEventListener('fetch', e => {
   const ret = fetchHandler(e)
@@ -53,6 +82,12 @@ addEventListener('fetch', e => {
  * @param {FetchEvent} e 
  */
 async function fetchHandler(e) {
+  // begin authentication
+  if (AUTH_ENABLE && !checkAuthRequest(e.request)) {
+    return new Response("", {status: 401, headers: {"WWW-Authenticate": 'Basic realm="' + AUTH_REALM + '"'}})
+  }
+  // end authentication
+  
   const req = e.request
   const urlStr = req.url
   const urlObj = new URL(urlStr)
