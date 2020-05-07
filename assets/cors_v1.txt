@@ -3,6 +3,10 @@
 
 # google
 ssl.google-analytics.com
+www.google.com
+m.google.com
+google.com
+google.hk
 
 # [public]
 cdn.jsdelivr.net
