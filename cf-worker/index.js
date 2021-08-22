@@ -7,6 +7,8 @@ const ASSET_URL = 'https://etherdream.github.io/jsproxy'
 const NEED_AUTH = true
 const BASIC_USER = 'admin'
 const BASIC_PASS = 'admin'
+const AUTH_COOKIE_NAME = '__AAAAAAUTH_AA'
+const SALT = 'salt'
 
 const JS_VER = 10
 const MAX_RETRY = 1
@@ -70,11 +72,27 @@ async function fetchHandler(e) {
   }
 
   if(NEED_AUTH) {
-    var valid = false
-    if(req.headers.has('Authorization')){
+    // 先校验cookie
+    const cookie = req.headers.get("Cookie") || ""
+    const data = new TextEncoder().encode(BASIC_USER + SALT +BASIC_PASS);
+    const buf = await crypto.subtle.digest('SHA-256', data);
+    const auth_hash = btoa(String.fromCharCode(...new Uint8Array(buf)));
+    var valid = cookie && cookie.includes(`${AUTH_COOKIE_NAME}=${auth_hash}`)
+    
+    // 再校验Basic auth
+    if(!valid && req.headers.has('Authorization')){
       const { user, pass } = basicAuthentication(req)
       valid =  (BASIC_USER == user && BASIC_PASS == pass)
+      if(valid){
+        // 成功则设置cookie并返回
+        return makeRes('', 302, {
+          'Set-Cookie': `${AUTH_COOKIE_NAME}=${auth_hash}; path=/`,
+          'location': urlObj.href,
+        })
+      }
     }
+    
+    // 失败则立即返回
     if(!valid) {
       return new Response('You need to login.', {
         status: 401,
