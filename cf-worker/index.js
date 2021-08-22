@@ -31,12 +31,12 @@ const PREFLIGHT_INIT = {
 function makeRes(body, status = 200, headers = {}) {
   headers['--ver'] = JS_VER
   headers['access-control-allow-origin'] = '*'
-  return new Response(body, {status, headers})
+  return new Response(body, { status, headers })
 }
 
 
 /**
- * @param {string} urlStr 
+ * @param {string} urlStr
  */
 function newUrl(urlStr) {
   try {
@@ -55,7 +55,7 @@ addEventListener('fetch', e => {
 
 
 /**
- * @param {FetchEvent} e 
+ * @param {FetchEvent} e
  */
 async function fetchHandler(e) {
   const req = e.request
@@ -102,24 +102,46 @@ async function fetchHandler(e) {
       })
     }
   }
-
+  
+  
   if (path.startsWith('/http/')) {
     return httpHandler(req, path.substr(6))
   }
+  if (path.startsWith('/ws')) {
+    return wsHandler(req)
+  }
 
   switch (path) {
-  case '/http':
-    return makeRes('请更新 cfworker 到最新版本!')
-  case '/ws':
-    return makeRes('not support', 400)
-  case '/works':
-    return makeRes('it works')
-  default:
-    // static files
-    return fetch(ASSET_URL + path)
+    case '/http':
+      return makeRes('请更新 cfworker 到最新版本!')
+    case '/ws':
+      return makeRes('not support', 400)
+    case '/works':
+      return makeRes('it works')
+    default:
+      // static files
+      return fetch(ASSET_URL + path)
   }
 }
 
+function wsHandler(req) {
+  const urlObj = new URL(req.url);
+  const origin = urlObj.searchParams.get('origin');
+  const targeturl = urlObj.searchParams.get('url__');
+
+  const headers = new Headers(req.headers);
+  origin !== undefined && headers.set('origin', origin);
+
+  return fetch(targeturl, {
+    method: req.method,
+    headers,
+    body: req.body,
+    redirect: 'follow',
+  }).catch((err) => {
+    console.log(err)
+    throw err;
+  });
+}
 
 /**
  * @param {Request} req
@@ -133,7 +155,7 @@ function httpHandler(req, pathname) {
 
   // preflight
   if (req.method === 'OPTIONS' &&
-      reqHdrRaw.has('access-control-request-headers')
+    reqHdrRaw.has('access-control-request-headers')
   ) {
     return new Response(null, PREFLIGHT_INIT)
   }
@@ -159,12 +181,12 @@ function httpHandler(req, pathname) {
     if (k.substr(0, 2) === '--') {
       // 系统信息
       switch (k.substr(2)) {
-      case 'aceh':
-        acehOld = true
-        break
-      case 'raw-info':
-        [rawSvr, rawLen, rawEtag] = v.split('|')
-        break
+        case 'aceh':
+          acehOld = true
+          break
+        case 'raw-info':
+          [rawSvr, rawLen, rawEtag] = v.split('|')
+          break
       }
     } else {
       // 还原 HTTP 请求头
@@ -200,10 +222,10 @@ function httpHandler(req, pathname) {
 
 
 /**
- * 
- * @param {URL} urlObj 
- * @param {RequestInit} reqInit 
- * @param {number} retryTimes 
+ *
+ * @param {URL} urlObj
+ * @param {RequestInit} reqInit
+ * @param {number} retryTimes
  */
 async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
   const res = await fetch(urlObj.href, reqInit)
@@ -211,12 +233,12 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
   const resHdrNew = new Headers(resHdrOld)
 
   let expose = '*'
-  
+
   for (const [k, v] of resHdrOld.entries()) {
     if (k === 'access-control-allow-origin' ||
-        k === 'access-control-expose-headers' ||
-        k === 'location' ||
-        k === 'set-cookie'
+      k === 'access-control-expose-headers' ||
+      k === 'location' ||
+      k === 'set-cookie'
     ) {
       const x = '--' + k
       resHdrNew.set(x, v)
@@ -277,10 +299,10 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
   resHdrNew.delete('clear-site-data')
 
   if (status === 301 ||
-      status === 302 ||
-      status === 303 ||
-      status === 307 ||
-      status === 308
+    status === 302 ||
+    status === 303 ||
+    status === 307 ||
+    status === 308
   ) {
     status = status + 10
   }
@@ -293,7 +315,7 @@ async function proxy(urlObj, reqInit, acehOld, rawLen, retryTimes) {
 
 
 /**
- * @param {URL} urlObj 
+ * @param {URL} urlObj
  */
 function isYtUrl(urlObj) {
   return (
@@ -303,9 +325,9 @@ function isYtUrl(urlObj) {
 }
 
 /**
- * @param {URL} urlObj 
- * @param {number} newLen 
- * @param {Response} res 
+ * @param {URL} urlObj
+ * @param {number} newLen
+ * @param {Response} res
  */
 async function parseYtVideoRedir(urlObj, newLen, res) {
   if (newLen > 2000) {
@@ -325,8 +347,6 @@ async function parseYtVideoRedir(urlObj, newLen, res) {
   }
   return urlObj
 }
-
-
 
 /**
  * Parse HTTP Basic Authorization value.
