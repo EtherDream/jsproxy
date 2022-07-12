@@ -26,7 +26,7 @@ cd $(mktemp -d)
 curl -O https://www.openssl.org/source/openssl-1.1.1b.tar.gz
 tar zxf openssl-*
 
-curl -O https://ftp.pcre.org/pub/pcre/pcre-8.43.tar.gz
+curl -O https://ftp.exim.org/pub/pcre/pcre-8.43.tar.gz
 tar zxf pcre-*
 
 curl -O https://zlib.net/zlib-1.2.11.tar.gz
