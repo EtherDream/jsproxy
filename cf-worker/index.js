@@ -8,7 +8,7 @@ const ASSET_URL = 'https://etherdream.github.io/jsproxy'
 const JS_VER = 11
 const MAX_RETRY = 1
 
-const ip_to_dns = '.sslip.io'
+const ip_dns_srv = '.sslip.io'
 // solve Cloudflare: Direct IP Access Not Allowed 
 
 /** @type {RequestInit} */
@@ -39,7 +39,7 @@ function makeRes(body, status = 200, headers = {}) {
 function newUrl(urlStr) {
   try {
     const ipv4=/\b(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b/;
-    var urlobj = new URL(urlstr)
+    var urlobj = new URL(urlStr)
     urlobj.hostname = 
     ipv4.test(urlobj.hostname) ?
       urlobj.hostname + ip_dns_srv //'.sslip.io'
